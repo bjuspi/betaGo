@@ -1,11 +1,6 @@
 import cv2
 import numpy as np
 
-WINDOW_ORIGINAL = "Original"
-WINDOW_BILATERAL = "Bilateral"
-WINDOW_GRAY = "Gray"
-WINDOW_TRESH = "Tresh"
-
 def perspectiveTransform(image, corners):
     def order_corner_points(corners):
         # Separate corners into individual points
@@ -47,31 +42,7 @@ def perspectiveTransform(image, corners):
     # Return the transformed image
     return cv2.warpPerspective(image, matrix, (width, height))
 
-def processCamImg(frame):
-    blur = cv2.bilateralFilter(frame,9,75,75)
-    gray = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
-    thresh = cv2.threshold(gray,40,255, cv2.THRESH_BINARY_INV)[1]
-
-    frame = cv2.resize(frame, (400, 300))
-    blur = cv2.resize(blur, (400, 300))
-    gray = cv2.resize(gray, (400, 300))
-    thresh = cv2.resize(thresh, (400, 300))
-
-    cv2.namedWindow(WINDOW_ORIGINAL)
-    cv2.namedWindow(WINDOW_BILATERAL)
-    cv2.namedWindow(WINDOW_GRAY)
-    cv2.namedWindow(WINDOW_TRESH)
-
-    cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
-    cv2.moveWindow(WINDOW_BILATERAL, 400, 0)
-    cv2.moveWindow(WINDOW_GRAY, 800, 0)
-    cv2.moveWindow(WINDOW_TRESH, 0, 330)
-
-    cv2.imshow(WINDOW_ORIGINAL, frame)
-    cv2.imshow(WINDOW_BILATERAL, blur)
-    cv2.imshow(WINDOW_GRAY, gray)
-    cv2.imshow(WINDOW_TRESH, thresh)
-
+def imagePerspectiveTransform(frame, thresh):
     cnts = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0] if len(cnts) == 2 else cnts[1]
 
@@ -82,6 +53,6 @@ def processCamImg(frame):
 
             if area < 330000 and len(approx) == 4: 
                 transformed = perspectiveTransform(frame, approx)
-                return [True, cv2.resize(transformed, (300, 300))]
+                return cv2.resize(transformed, (300, 300))
 
-            return [False]
+            return None
