@@ -1,7 +1,7 @@
 import cv2
 import goboardImageProcessing
 
-CAM_INDEX = 1
+CAM_INDEX = 0
 WINDOW_TRANSFORMED = "Transformed"
 
 capture = cv2.VideoCapture(CAM_INDEX)
@@ -14,6 +14,8 @@ else:
 
 while captureVal:
     processedImg = goboardImageProcessing.processCamImg(frame)
+    grayImg = cv2.cvtColor(processedImg, cv2.COLOR_BGR2GRAY)
+    grayBlurImg = cv2.blur(grayImg, (5, 5))
     
     if processedImg[0] is True:
         transformed = processedImg[1]
