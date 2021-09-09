@@ -56,7 +56,7 @@ while True:
                 x2 = int(x0 - 1000*(-b))
                 y2 = int(y0 - 1000*(a))
                 cv2.line(hough_line_frame, (x1,y1), (x2,y2), (0,0,255), 2)
-    # h_lines, v_lines = h_v_lines(lines)
+    h_lines, v_lines = h_v_lines(lines)
     # if h_lines is not None and v_lines is not None:
     #     print("h_lines: " + str(h_lines))
     #     print("v_lines: " + str(v_lines))
