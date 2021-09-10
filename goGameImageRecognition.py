@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import goboardImageProcessing
 
-CAM_INDEX = 0
+CAM_INDEX = 1
 
 WINDOW_ORIGINAL = "Original"
 WINDOW_TRESH = "Tresh"
@@ -20,7 +20,7 @@ cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
 cv2.moveWindow(WINDOW_TRESH, 400, 0)
 cv2.moveWindow(WINDOW_TRANSFORMED, 800, 0)
 cv2.moveWindow(WINDOW_CANNY_EDGES, 0, 330)
-cv2.moveWindow(WINDOW_HOUGH_LINES, 400, 330)
+cv2.moveWindow(WINDOW_HOUGH_LINES, 300, 330)
 
 capture = cv2.VideoCapture(CAM_INDEX)
 
@@ -47,13 +47,13 @@ while captureVal:
     
     if transformed is not None:
         # Test how much to be cropped using findInputConstraints.py
-        cropped = transformed[5:295, 5:295]
+        cropped = transformed[10:290, 10:290]
         cropped = cv2.resize(cropped, (300, 300))
         transformedGray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
         transformedGrayBlur = cv2.blur(transformedGray, (5, 5))
         transformedEdges = goboardImageProcessing.canny_edge(transformedGrayBlur)
         transformedLines = goboardImageProcessing.hough_line(transformedEdges)
-        houghLine = transformed.copy()
+        houghLine = cropped.copy()
 
         if transformedLines is not None:        
             for line in transformedLines:
