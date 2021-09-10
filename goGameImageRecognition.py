@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import goboardImageProcessing
 
-CAM_INDEX = 0
+CAM_INDEX = 1
 
 WINDOW_ORIGINAL = "Original"
 WINDOW_TRESH = "Tresh"
@@ -44,6 +44,7 @@ while captureVal:
     
     cv2.imshow(WINDOW_ORIGINAL, frame)
     cv2.imshow(WINDOW_TRESH, thresh)
+    
     if transformed is not None:
         transformedGray = cv2.cvtColor(transformed, cv2.COLOR_BGR2GRAY)
         transformedGrayBlur = cv2.blur(transformedGray, (5, 5))
