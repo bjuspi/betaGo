@@ -8,18 +8,21 @@ WINDOW_BILATERAL = "Bilateral"
 WINDOW_GRAY = "Gray"
 WINDOW_TRESH = "Tresh"
 WINDOW_TRANSFORMED = "Transformed"
+WINDOW_CROPPED = "Cropped"
 
 cv2.namedWindow(WINDOW_ORIGINAL)
 cv2.namedWindow(WINDOW_BILATERAL)
 cv2.namedWindow(WINDOW_GRAY)
 cv2.namedWindow(WINDOW_TRESH)
 cv2.namedWindow(WINDOW_TRANSFORMED)
+cv2.namedWindow(WINDOW_CROPPED)
 
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
 cv2.moveWindow(WINDOW_BILATERAL, 400, 0)
 cv2.moveWindow(WINDOW_GRAY, 800, 0)
 cv2.moveWindow(WINDOW_TRESH, 0, 330)
 cv2.moveWindow(WINDOW_TRANSFORMED, 400, 330)
+cv2.moveWindow(WINDOW_CROPPED, 700, 330)
 
 def perspectiveTransform(image, corners):
     def order_corner_points(corners):
@@ -109,10 +112,14 @@ while captureVal:
 
     # Comment out this if the constraint is not determined yet
     if transformed is not None:
+        # Determine how much should be cropped
+        cropped = transformed[5:295, 5:295]
+        cropped = cv2.resize(cropped, (300, 300))
         cv2.imshow(WINDOW_TRANSFORMED, transformed)
+        cv2.imshow(WINDOW_CROPPED, cropped)
 
     captureVal, frame = capture.read()
 
-    if cv2.waitKey(1) == 27: break # Exit on ECS
+    if cv2.waitKey(1) == 27: break # Exit on ESC
 
 cv2.destroyAllWindows()

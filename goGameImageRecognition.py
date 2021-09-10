@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import goboardImageProcessing
 
-CAM_INDEX = 1
+CAM_INDEX = 0
 
 WINDOW_ORIGINAL = "Original"
 WINDOW_TRESH = "Tresh"
@@ -46,7 +46,10 @@ while captureVal:
     cv2.imshow(WINDOW_TRESH, thresh)
     
     if transformed is not None:
-        transformedGray = cv2.cvtColor(transformed, cv2.COLOR_BGR2GRAY)
+        # Test how much to be cropped using findInputConstraints.py
+        cropped = transformed[5:295, 5:295]
+        cropped = cv2.resize(cropped, (300, 300))
+        transformedGray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
         transformedGrayBlur = cv2.blur(transformedGray, (5, 5))
         transformedEdges = goboardImageProcessing.canny_edge(transformedGrayBlur)
         transformedLines = goboardImageProcessing.hough_line(transformedEdges)
@@ -72,6 +75,6 @@ while captureVal:
 
     captureVal, frame = capture.read()
 
-    if cv2.waitKey(1) == 27: break # Exit on ECS
+    if cv2.waitKey(1) == 27: break # Exit on ESC
 
 cv2.destroyAllWindows()
