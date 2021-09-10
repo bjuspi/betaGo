@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-CAM_INDEX = 1
+CAM_INDEX = 0
 
 WINDOW_ORIGINAL = "Original"
 WINDOW_BILATERAL = "Bilateral"
