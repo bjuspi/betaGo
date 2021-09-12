@@ -57,7 +57,7 @@ def imagePerspectiveTransform(frame, thresh):
 
             # Use findInputConstraints.py to find a proper area constraint first
             # This constraint needs to be reset after changing input image's resolution or the board size.
-            if 62000 < area < 100000 and len(approx) == 4: 
+            if 60000 < area < 100000 and len(approx) == 4: 
                 transformed = perspectiveTransform(frame, approx)
                 return cv2.resize(transformed, (300, 300))
             

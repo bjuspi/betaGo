@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-CAM_INDEX = 0
+CAM_INDEX = 1
 
 WINDOW_ORIGINAL = "Original"
 WINDOW_BILATERAL = "Bilateral"
@@ -75,11 +75,11 @@ def imagePerspectiveTransform(frame, thresh):
             approx = cv2.approxPolyDP(c, 0.015 * peri, True)
 
             # For finding a proper area constraint after changing input image's resolution or the board size.
-            if 62000 < area < 100000 and len(approx) == 4:
+            if len(approx) == 4:
                 print("Current area is " + str(area) + ".")
 
             # Comment out this if the constraint is not determined yet
-            if 62000 < area < 100000 and len(approx) == 4: 
+            if 60000 < area < 100000 and len(approx) == 4: 
                 transformed = perspectiveTransform(frame, approx)
                 return cv2.resize(transformed, (300, 300))
             

@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import goboardImageProcessing
+import goBoardImageProcessing
 
 CAM_INDEX = 1
 
@@ -40,7 +40,7 @@ while captureVal:
     gray = cv2.resize(gray, (400, 300))
     thresh = cv2.resize(thresh, (400, 300))
 
-    transformed = goboardImageProcessing.imagePerspectiveTransform(frame, thresh)
+    transformed = goBoardImageProcessing.imagePerspectiveTransform(frame, thresh)
     
     cv2.imshow(WINDOW_ORIGINAL, frame)
     cv2.imshow(WINDOW_TRESH, thresh)
@@ -51,8 +51,8 @@ while captureVal:
         cropped = cv2.resize(cropped, (300, 300))
         transformedGray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
         transformedGrayBlur = cv2.blur(transformedGray, (5, 5))
-        transformedEdges = goboardImageProcessing.canny_edge(transformedGrayBlur)
-        transformedLines = goboardImageProcessing.hough_line(transformedEdges)
+        transformedEdges = goBoardImageProcessing.canny_edge(transformedGrayBlur)
+        transformedLines = goBoardImageProcessing.hough_line(transformedEdges)
         houghLine = cropped.copy()
 
         if transformedLines is not None:        
