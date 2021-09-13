@@ -57,45 +57,45 @@ while True:
                 y2 = int(y0 - 1000*(a))
                 cv2.line(hough_line_frame, (x1,y1), (x2,y2), (0,0,255), 2)
     h_lines, v_lines = h_v_lines(lines)
-    # if h_lines is not None and v_lines is not None:
-    #     print("h_lines: " + str(h_lines))
-    #     print("v_lines: " + str(v_lines))
-    #     try:
-    #         for h_line in h_lines:
-    #             rho, theta = h_line
-    #             a = np.cos(theta)
-    #             b = np.sin(theta)
-    #             x0 = a*rho
-    #             y0 = b*rho
-    #             x1 = int(x0 + 1000*(-b))
-    #             y1 = int(y0 + 1000*(a))
-    #             x2 = int(x0 - 1000*(-b))
-    #             y2 = int(y0 - 1000*(a))
-    #             cv2.line(ver_hor_frame, (x1,y1),(x2,y2),(255,0,0),2)
-    #     except ValueError:
-    #         print("h_line error")
-    #         break
-    #     try:
-    #         for v_line in v_lines:
-    #             rho, theta = v_line
-    #             a = np.cos(theta)
-    #             b = np.sin(theta)
-    #             x0 = a*rho
-    #             y0 = b*rho
-    #             x1 = int(x0 + 1000*(-b))
-    #             y1 = int(y0 + 1000*(a))
-    #             x2 = int(x0 - 1000*(-b))
-    #             y2 = int(y0 - 1000*(a))
-    #             cv2.line(ver_hor_frame, (x1,y1),(x2,y2),(0,255,0),2)
-    #     except ValueError:
-    #         print("v_line error")
-    #         break
-    # intersection_points = line_intersections(h_lines, v_lines)
-    # points = cluster_points(intersection_points)
-    # augmented_points = augment_points(points)
-    # for point in augmented_points:
-    #     x, y = point
-    #     cv2.circle(intersection_frame, (int(x), int(y)), radius=5, color=(0, 0, 255), thickness=-1)
+    if h_lines is not None and v_lines is not None:
+        print("h_lines: " + str(h_lines))
+        print("v_lines: " + str(v_lines))
+        try:
+            for h_line in h_lines:
+                rho, theta = h_line
+                a = np.cos(theta)
+                b = np.sin(theta)
+                x0 = a*rho
+                y0 = b*rho
+                x1 = int(x0 + 1000*(-b))
+                y1 = int(y0 + 1000*(a))
+                x2 = int(x0 - 1000*(-b))
+                y2 = int(y0 - 1000*(a))
+                cv2.line(ver_hor_frame, (x1,y1),(x2,y2),(255,0,0),2)
+        except ValueError:
+            print("h_line error")
+            break
+        try:
+            for v_line in v_lines:
+                rho, theta = v_line
+                a = np.cos(theta)
+                b = np.sin(theta)
+                x0 = a*rho
+                y0 = b*rho
+                x1 = int(x0 + 1000*(-b))
+                y1 = int(y0 + 1000*(a))
+                x2 = int(x0 - 1000*(-b))
+                y2 = int(y0 - 1000*(a))
+                cv2.line(ver_hor_frame, (x1,y1),(x2,y2),(0,255,0),2)
+        except ValueError:
+            print("v_line error")
+            break
+    intersection_points = line_intersections(h_lines, v_lines)
+    points = cluster_points(intersection_points)
+    augmented_points = augment_points(points)
+    for point in augmented_points:
+        x, y = point
+        cv2.circle(intersection_frame, (int(x), int(y)), radius=5, color=(0, 0, 255), thickness=-1)
 
     cv2.imshow(win1, frame)
     cv2.imshow(win2, gray_blur)
