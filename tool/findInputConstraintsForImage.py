@@ -80,7 +80,7 @@ def imagePerspectiveTransform(image, thresh):
             
             return None
 
-image = cv2.imread('./image/mock-samples/throughCam/4.jpg') # None of the cam sample images is good enough for perspective transform.
+image = cv2.imread('./image/mock-samples/throughCam/23.jpg') # None of the cam sample images is good enough for perspective transform.
 
 while True: # Remove the bilateral step, the result is better. 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

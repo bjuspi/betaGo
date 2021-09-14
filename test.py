@@ -85,7 +85,7 @@ def get_color(img, x, y):
 
 while True:
     # ret, frame = cap.read()
-    frame = cv2.imread('image/mock-samples/throghCam/_DSC0667.JPG')
+    frame = cv2.imread('image/mock-samples/throughCam/26.jpg')
 
     frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA)
 
@@ -112,7 +112,7 @@ while True:
     destination_corners, h, w = get_destination_points(approx_corners)
     un_warped = unwarp(frame, np.float32(approx_corners), destination_corners)
     cropped = un_warped[0:h, 0:w]
-    cv2.imwrite('image/mock-samples/throughCode/_DSC0667_cropped.JPG', cropped)
+    # cv2.imwrite('image/mock-samples/throughCam/23.jpg', cropped)
 
     transformedGray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
     transformedEdges = gbip.canny_edge(transformedGray)
