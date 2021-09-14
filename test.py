@@ -53,8 +53,7 @@ def get_destination_points(corners):
     print('\nThe approximated height and width of the original image is: \n', (h, w))
     return destination_corners, h, w
 
-def unwarp(img, src, dst):
-    w,h  = img.shape[:2]
+def unwarp(img, src, dst, w, h):
     print(img.shape)
     H, _ = cv2.findHomography(src, dst, cv2.RANSAC, 5.0)
     print('\nThe homography matrix is: \n', H)
@@ -85,7 +84,7 @@ def get_color(img, x, y):
 
 while True:
     # ret, frame = cap.read()
-    frame = cv2.imread('image/sample/from-cam/5.jpg')
+    frame = cv2.imread('image/sample/from-cam/4.jpg')
 
     frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA)
 
@@ -110,11 +109,11 @@ while True:
     approx_corners = [approx_corners[i] for i in [0, 2, 1, 3]]
     print(approx_corners)
     destination_corners, h, w = get_destination_points(approx_corners)
-    un_warped = unwarp(frame, np.float32(approx_corners), destination_corners)
+    un_warped = unwarp(frame, np.float32(approx_corners), destination_corners, w, h)
     cropped = un_warped[0:h, 0:w]
     cropped = cv2.resize(cropped, (300, 300))
     cropped = cropped[10:290, 10:290]
-    # cv2.imwrite('image/sample/from-code/5.jpg', cropped)
+    # cv2.imwrite('image/sample/from-code/4.jpg', cropped)
 
     transformedGray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
     transformedEdges = gbip.canny_edge(transformedGray)
