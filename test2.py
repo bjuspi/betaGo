@@ -61,7 +61,8 @@ for point in points:
         availablePoints.append(point)
         cv2.circle(image, (x, y), radius=EXTRACT_AREA_SIDE_LENGTH, color=(0, 0, 255), thickness=-1)
 
-print(blackPoints)
+print('Black points:', blackPoints)
+print('White points:', whitePoints)
     
 while True:
     cv2.imshow(WINDOW_IMAGE, image)
