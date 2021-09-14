@@ -30,7 +30,7 @@ blackPoints = []
 whitePoints = []
 availablePoints = []
 
-image = cv2.imread('image/sample/from-code/4.jpg')
+image = cv2.imread('image/sample/from-code/1.jpg')
 transformedGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 transformedEdges = gbip.canny_edge(transformedGray)
@@ -59,7 +59,7 @@ for point in points:
         cv2.circle(image, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(102, 255, 255), thickness=-1)
     else:
         availablePoints.append(point)
-        cv2.circle(image, (x, y), radius=EXTRACT_AREA_SIDE_LENGTH, color=(0, 0, 255), thickness=-1)
+        cv2.circle(image, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(0, 0, 255), thickness=-1)
 
 print('Black points:', blackPoints)
 print('White points:', whitePoints)

@@ -140,53 +140,51 @@ while True:
                 y2 = int(y0 - 1000*(a))
                 cv2.line(houghLine, (x1,y1), (x2,y2), (0,0,255), 2)
 
-        # if h_lines is not None and v_lines is not None:
-            # intersection_points = gbip.line_intersections(h_lines, v_lines)
-    #         # points = goboardImageProcessing.cluster_points(intersection_points)
+        if h_lines is not None and v_lines is not None:
+            intersection_points = gbip.line_intersections(h_lines, v_lines)
+            points = gbip.cluster_points(intersection_points)
             
-    #         # augmented_points = goboardImageProcessing.augment_points(points)
-    #         # for index, point in enumerate(augmented_points):
-    #         #     x, y = point
-    #         #     print("index: " + str(index) + " x: " + str(x) + " y: " + str(y))
+            augmented_points = gbip.augment_points(points)
+            for index, point in enumerate(augmented_points):
+                x, y = point
+                print("index: " + str(index) + " x: " + str(x) + " y: " + str(y))
                 
-    #         #     color = get_color(cropped, int(x), int(y))
+                color = get_color(cropped, int(x), int(y))
                 
-    #         #     cv2.circle(intersection_frame, (int(x), int(y)), radius=5, color=(0, 0, 255), thickness=-1)
-    #         #     if index == 42:
-    #         #         cv2.circle(intersection_frame, (int(x), int(y)), 5, (0, 255, 0), -1)
-            # for h_line in h_lines:
-            #     rho, theta = h_line
-            #     a = np.cos(theta)
-            #     b = np.sin(theta)
-            #     x0 = a*rho
-            #     y0 = b*rho
-            #     x1 = int(x0 + 1000*(-b))
-            #     y1 = int(y0 + 1000*(a))
-            #     x2 = int(x0 - 1000*(-b))
-            #     y2 = int(y0 - 1000*(a))
-            #     cv2.line(ver_hor_frame, (x1,y1),(x2,y2),(255,0,0),2)
-    #         for v_line in v_lines:
-    #             rho, theta = v_line
-    #             a = np.cos(theta)
-    #             b = np.sin(theta)
-    #             x0 = a*rho
-    #             y0 = b*rho
-    #             x1 = int(x0 + 1000*(-b))
-    #             y1 = int(y0 + 1000*(a))
-    #             x2 = int(x0 - 1000*(-b))
-    #             y2 = int(y0 - 1000*(a))
-    #             cv2.line(ver_hor_frame, (x1,y1),(x2,y2),(0,255,0),2)
+                cv2.circle(intersection_frame, (int(x), int(y)), radius=5, color=(0, 0, 255), thickness=-1)
+                if index == 42:
+                    cv2.circle(intersection_frame, (int(x), int(y)), 5, (0, 255, 0), -1)
+            for h_line in h_lines:
+                rho, theta = h_line
+                a = np.cos(theta)
+                b = np.sin(theta)
+                x0 = a*rho
+                y0 = b*rho
+                x1 = int(x0 + 1000*(-b))
+                y1 = int(y0 + 1000*(a))
+                x2 = int(x0 - 1000*(-b))
+                y2 = int(y0 - 1000*(a))
+                cv2.line(ver_hor_frame, (x1,y1),(x2,y2),(255,0,0),2)
+            for v_line in v_lines:
+                rho, theta = v_line
+                a = np.cos(theta)
+                b = np.sin(theta)
+                x0 = a*rho
+                y0 = b*rho
+                x1 = int(x0 + 1000*(-b))
+                y1 = int(y0 + 1000*(a))
+                x2 = int(x0 - 1000*(-b))
+                y2 = int(y0 - 1000*(a))
+                cv2.line(ver_hor_frame, (x1,y1),(x2,y2),(0,255,0),2)
 
-    
-    transformedEdges = cv2.resize(transformedEdges, (300, 300))
     houghLine = cv2.resize(houghLine, (300, 300))
     intersection_frame = cv2.resize(intersection_frame, (300, 300))
 
     cv2.imshow(win1, canvas)
     cv2.imshow(win2, thresh)
     cv2.imshow(win3, cropped)
-    cv2.imshow(win4, transformedEdges)
-    cv2.imshow(win5, houghLine)
+    cv2.imshow(win4, houghLine)
+    cv2.imshow(win5, ver_hor_frame)
     cv2.imshow(win6, intersection_frame)
 
     c = cv2.waitKey(1)
