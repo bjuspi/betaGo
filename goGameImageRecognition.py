@@ -74,6 +74,7 @@ while captureVal:
         cv2.imshow(WINDOW_HOUGH_LINES, houghLine)
 
     captureVal, frame = capture.read()
+    frame = cv2.imread('image/5.jpg')
 
     if cv2.waitKey(1) == 27: break # Exit on ESC
 
