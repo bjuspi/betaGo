@@ -4,25 +4,22 @@ import numpy as np
 CAM_INDEX = 1
 
 WINDOW_ORIGINAL = "Original"
-WINDOW_BILATERAL = "Bilateral"
 WINDOW_GRAY = "Gray"
 WINDOW_TRESH = "Tresh"
 WINDOW_TRANSFORMED = "Transformed"
 WINDOW_CROPPED = "Cropped"
 
 cv2.namedWindow(WINDOW_ORIGINAL)
-cv2.namedWindow(WINDOW_BILATERAL)
 cv2.namedWindow(WINDOW_GRAY)
 cv2.namedWindow(WINDOW_TRESH)
 cv2.namedWindow(WINDOW_TRANSFORMED)
 cv2.namedWindow(WINDOW_CROPPED)
 
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
-cv2.moveWindow(WINDOW_BILATERAL, 400, 0)
-cv2.moveWindow(WINDOW_GRAY, 800, 0)
-cv2.moveWindow(WINDOW_TRESH, 0, 330)
-cv2.moveWindow(WINDOW_TRANSFORMED, 400, 330)
-cv2.moveWindow(WINDOW_CROPPED, 700, 330)
+cv2.moveWindow(WINDOW_GRAY, 400, 0)
+cv2.moveWindow(WINDOW_TRESH, 800, 0)
+cv2.moveWindow(WINDOW_TRANSFORMED, 0, 330)
+cv2.moveWindow(WINDOW_CROPPED, 399, 330)
 
 def perspectiveTransform(image, corners):
     def order_corner_points(corners):
@@ -94,19 +91,16 @@ else:
     print("Cannot open the camera of index " + str(CAM_INDEX) + ".")
 
 while captureVal:
-    bilateral = cv2.bilateralFilter(frame,9,75,75)
-    gray = cv2.cvtColor(bilateral, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(gray,40,255, cv2.THRESH_BINARY_INV)[1]
 
     frame = cv2.resize(frame, (400, 300))
-    bilateral = cv2.resize(bilateral, (400, 300))
     gray = cv2.resize(gray, (400, 300))
     thresh = cv2.resize(thresh, (400, 300))
 
     transformed = imagePerspectiveTransform(frame, thresh)
     
     cv2.imshow(WINDOW_ORIGINAL, frame)
-    cv2.imshow(WINDOW_BILATERAL, bilateral)
     cv2.imshow(WINDOW_GRAY, gray)
     cv2.imshow(WINDOW_TRESH, thresh)
 
