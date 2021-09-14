@@ -31,12 +31,10 @@ else:
     print("Cannot open the camera of index " + str(CAM_INDEX) + ".")
 
 while captureVal:
-    bilateral = cv2.bilateralFilter(frame,9,75,75)
-    gray = cv2.cvtColor(bilateral, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(gray,40,255, cv2.THRESH_BINARY_INV)[1]
 
     frame = cv2.resize(frame, (400, 300))
-    bilateral = cv2.resize(bilateral, (400, 300))
     gray = cv2.resize(gray, (400, 300))
     thresh = cv2.resize(thresh, (400, 300))
 
@@ -46,7 +44,7 @@ while captureVal:
     cv2.imshow(WINDOW_TRESH, thresh)
     
     if transformed is not None:
-        # Test how much to be cropped using findInputConstraints.py
+        # Test how much to be cropped using findInputConstraintsForCam.py
         cropped = transformed[10:290, 10:290]
         cropped = cv2.resize(cropped, (300, 300))
         transformedGray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)

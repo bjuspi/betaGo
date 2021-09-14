@@ -14,10 +14,10 @@ cv2.namedWindow(WINDOW_TRANSFORMED)
 cv2.namedWindow(WINDOW_CROPPED)
 
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
-cv2.moveWindow(WINDOW_GRAY, 800, 0)
-cv2.moveWindow(WINDOW_TRESH, 0, 330)
-cv2.moveWindow(WINDOW_TRANSFORMED, 400, 330)
-cv2.moveWindow(WINDOW_CROPPED, 700, 330)
+cv2.moveWindow(WINDOW_GRAY, 400, 0)
+cv2.moveWindow(WINDOW_TRESH, 800, 0)
+cv2.moveWindow(WINDOW_TRANSFORMED, 0, 330)
+cv2.moveWindow(WINDOW_CROPPED, 300, 330)
 
 def perspectiveTransform(image, corners):
     def order_corner_points(corners):
@@ -80,15 +80,15 @@ def imagePerspectiveTransform(image, thresh):
             
             return None
 
-image = cv2.imread('./image/mock-samples/throughCam/23.jpg') # None of the cam sample images is good enough for perspective transform.
+image = cv2.imread('./image/mock-samples/throughCam/23.jpg')
 
-while True: # Remove the bilateral step, the result is better. 
+while True:
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     thresh = cv2.threshold(gray,40,255, cv2.THRESH_BINARY_INV)[1]
 
-    image = cv2.resize(image, (800, 600)) # Remove the resize step?
-    gray = cv2.resize(gray, (800, 600))
-    thresh = cv2.resize(thresh, (800, 600))
+    image = cv2.resize(image, (400, 300))
+    gray = cv2.resize(gray, (400, 300))
+    thresh = cv2.resize(thresh, (400, 300))
 
     transformed = imagePerspectiveTransform(image, thresh)
     

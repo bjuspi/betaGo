@@ -55,7 +55,7 @@ def imagePerspectiveTransform(frame, thresh):
             peri = cv2.arcLength(c, True)
             approx = cv2.approxPolyDP(c, 0.015 * peri, True)
 
-            # Use findInputConstraints.py to find a proper area constraint first
+            # Use findInputConstraintsForCam.py to find a proper area constraint first
             # This constraint needs to be reset after changing input image's resolution or the board size.
             if 60000 < area < 100000 and len(approx) == 4: 
                 transformed = perspectiveTransform(frame, approx)
