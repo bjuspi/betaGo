@@ -23,9 +23,9 @@ cv2.namedWindow(win6)
 cv2.moveWindow(win1, 0, 0)
 cv2.moveWindow(win2, 400, 0)
 cv2.moveWindow(win3, 800, 0)
-cv2.moveWindow(win4, 0, 300)
-cv2.moveWindow(win5, 400, 300)
-cv2.moveWindow(win6, 800, 300)
+cv2.moveWindow(win4, 0, 330)
+cv2.moveWindow(win5, 300, 330)
+cv2.moveWindow(win6, 600, 330)
 
 # Check if the webcam is opened correctly
 if not cap.isOpened():
@@ -85,7 +85,7 @@ def get_color(img, x, y):
 
 while True:
     # ret, frame = cap.read()
-    frame = cv2.imread('image/mock-samples/throughCam/26.jpg')
+    frame = cv2.imread('image/sample/from-cam/5.jpg')
 
     frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA)
 
@@ -112,7 +112,9 @@ while True:
     destination_corners, h, w = get_destination_points(approx_corners)
     un_warped = unwarp(frame, np.float32(approx_corners), destination_corners)
     cropped = un_warped[0:h, 0:w]
-    # cv2.imwrite('image/mock-samples/throughCam/23.jpg', cropped)
+    cropped = cv2.resize(cropped, (300, 300))
+    cropped = cropped[10:290, 10:290]
+    # cv2.imwrite('image/sample/from-code/5.jpg', cropped)
 
     transformedGray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
     transformedEdges = gbip.canny_edge(transformedGray)
@@ -175,6 +177,11 @@ while True:
     #             x2 = int(x0 - 1000*(-b))
     #             y2 = int(y0 - 1000*(a))
     #             cv2.line(ver_hor_frame, (x1,y1),(x2,y2),(0,255,0),2)
+
+    
+    transformedEdges = cv2.resize(transformedEdges, (300, 300))
+    houghLine = cv2.resize(houghLine, (300, 300))
+    intersection_frame = cv2.resize(intersection_frame, (300, 300))
 
     cv2.imshow(win1, canvas)
     cv2.imshow(win2, thresh)
