@@ -167,3 +167,19 @@ def augmentPoints(points):
             augmented_points.append(point)
     augmented_points = sorted(augmented_points, key=lambda k: [k[1], k[0]])
     return augmented_points
+
+# Get Stone color
+def getStoneColor(img, x, y):
+    EXTRACT_AREA_SIDE_LENGTH = 8
+    analyse_area = img[x - EXTRACT_AREA_SIDE_LENGTH : x + EXTRACT_AREA_SIDE_LENGTH, 
+                        y - EXTRACT_AREA_SIDE_LENGTH : y + EXTRACT_AREA_SIDE_LENGTH]
+    
+    average_color_per_row = np.average(analyse_area, axis=0)
+    average_color = np.average(average_color_per_row, axis=0)
+
+    if average_color[0] < 30 and average_color[1] < 30 and average_color[2] < 30:
+        cv2.circle(img, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(153, 255, 51), thickness=-1) # The coordinates are y then x, so the sequence needs to be reversed here.
+    elif average_color[0] > 125 and average_color[1] > 125 and average_color[2] > 125:
+        cv2.circle(img, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(102, 255, 255), thickness=-1)
+    else:
+        cv2.circle(img, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(0, 0, 255), thickness=-1)

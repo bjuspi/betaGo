@@ -58,9 +58,9 @@ cropped_gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 cropped_edges = gbip.cannyEdge(cropped_gray)
 lines = gbip.houghLine(cropped_edges)
 
-hough_line = cropped.copy()
 intersection_frame = cropped.copy()
 ver_hor_frame = cropped.copy()
+board_frame = cropped.copy()
 
 if lines is not None:    
     h_lines, v_lines = gbip.horizontalVerticalLines(lines)
@@ -69,10 +69,11 @@ if lines is not None:
         intersection_points = gbip.lineIntersections(h_lines, v_lines)
         points = gbip.clusterPoints(intersection_points)
         augmented_points = gbip.augmentPoints(points)
-        
+
         for index, point in enumerate(augmented_points):
-            x, y = point
-            print("index: " + str(index) + " x: " + str(x) + " y: " + str(y))
+            x = int(point[1]) # The crop step requires integer, this could cause issues.
+            y = int(point[0])
+            color = gbip.getStoneColor(board_frame, x, y)
                 
             cv2.circle(intersection_frame, (int(x), int(y)), radius=5, color=(0, 0, 255), thickness=-1)
         for h_line in h_lines:
@@ -81,15 +82,12 @@ if lines is not None:
         for v_line in v_lines:
             draw.drawLine(ver_hor_frame, v_line, (0, 255, 0))
 
-    for line in lines:
-        draw.drawLine(hough_line, line[0], (0, 0, 255))
-
 cv2.imshow(win1, canvas)
 cv2.imshow(win2, thresh)
 cv2.imshow(win3, cropped)
-cv2.imshow(win4, hough_line)
-cv2.imshow(win5, ver_hor_frame)
-cv2.imshow(win6, intersection_frame)
+cv2.imshow(win4, ver_hor_frame)
+cv2.imshow(win5, intersection_frame)
+cv2.imshow(win6, board_frame)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
