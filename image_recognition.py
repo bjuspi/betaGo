@@ -74,7 +74,8 @@ if lines is not None:
             x = int(point[1]) # The crop step requires integer, this could cause issues.
             y = int(point[0])
             color = gbip.getStoneColor(board_frame, x, y)
-                
+            # print(color)
+            # cv2.waitKey(0)                
             cv2.circle(intersection_frame, (int(x), int(y)), radius=5, color=(0, 0, 255), thickness=-1)
         for h_line in h_lines:
             draw.drawLine(ver_hor_frame, h_line, (255, 0, 0))
