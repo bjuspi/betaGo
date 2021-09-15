@@ -85,18 +85,18 @@ def getDestinationCorners(corners):
 
     destination_corners = np.float32([(0, h - 1), (w - 1, 0), (0, 0), (w - 1, h - 1)])
     
-    print('\nThe destination points are: \n')
+    # print('\nThe destination points are: \n')
     for index, c in enumerate(destination_corners):
         character = chr(65 + index) + "'"
-        print(character, ':', c)
+        # print(character, ':', c)
         
-    print('\nThe approximated height and width of the original image is: \n', (h, w))
+    # print('\nThe approximated height and width of the original image is: \n', (h, w))
     return destination_corners, h, w
 
 def unwarp(img, src, dst, w, h):
-    print(img.shape)
+    # print(img.shape)
     H, _ = cv2.findHomography(src, dst, cv2.RANSAC, 5.0)
-    print('\nThe homography matrix is: \n', H)
+    # print('\nThe homography matrix is: \n', H)
     un_warped = cv2.warpPerspective(img, H, (w, h), flags=cv2.INTER_LINEAR)
     return un_warped
 
@@ -177,9 +177,12 @@ def getStoneColor(img, x, y):
     average_color_per_row = np.average(analyse_area, axis=0)
     average_color = np.average(average_color_per_row, axis=0)
 
-    if average_color[0] < 30 and average_color[1] < 30 and average_color[2] < 30:
+    if average_color[0] < 30 and average_color[1] < 30 and average_color[2] < 30: # Black stones.
         cv2.circle(img, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(153, 255, 51), thickness=-1) # The coordinates are y then x, so the sequence needs to be reversed here.
-    elif average_color[0] > 125 and average_color[1] > 125 and average_color[2] > 125:
+        return 'black'
+    elif average_color[0] > 125 and average_color[1] > 125 and average_color[2] > 125: # White stones.
         cv2.circle(img, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(102, 255, 255), thickness=-1)
-    else:
+        return 'white'
+    else: # Empty intersections.
         cv2.circle(img, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(0, 0, 255), thickness=-1)
+        return 'empty'
