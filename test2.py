@@ -11,7 +11,7 @@ Using EXTRACT_AREA_SIDE_LENGTH = 8:
     image 2:
             black: 14 
             white: 49
-    white:
+    black:
             [16.26171875 11.921875    7.1875    ]
     white:
             [163.171875  158.8125    130.2734375]
