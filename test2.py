@@ -30,7 +30,7 @@ blackPoints = []
 whitePoints = []
 availablePoints = []
 
-image = cv2.imread('image/sample/from-code/1.jpg')
+image = cv2.imread('image/sample/from-code/4.jpg')
 transformedGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 transformedEdges = gbip.canny_edge(transformedGray)

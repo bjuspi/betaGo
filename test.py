@@ -31,35 +31,6 @@ cv2.moveWindow(win6, 600, 330)
 if not cap.isOpened():
     raise IOError("Cannot open webcam")
 
-def get_destination_points(corners):
-    """
-        corners - A -> C -> B -> D
-    """
-    w1 = np.sqrt((corners[0][0] - corners[3][0]) ** 2 + (corners[0][1] - corners[3][1]) ** 2)
-    w2 = np.sqrt((corners[1][0] - corners[2][0]) ** 2 + (corners[1][1] - corners[2][1]) ** 2)
-    w = max(int(w1), int(w2))
-
-    h1 = np.sqrt((corners[0][0] - corners[1][0]) ** 2 + (corners[0][1] - corners[1][1]) ** 2)
-    h2 = np.sqrt((corners[2][0] - corners[3][0]) ** 2 + (corners[2][1] - corners[3][1]) ** 2)
-    h = max(int(h1), int(h2))
-
-    destination_corners = np.float32([(0, h - 1), (w - 1, 0), (0, 0), (w - 1, h - 1)])
-    
-    print('\nThe destination points are: \n')
-    for index, c in enumerate(destination_corners):
-        character = chr(65 + index) + "'"
-        print(character, ':', c)
-        
-    print('\nThe approximated height and width of the original image is: \n', (h, w))
-    return destination_corners, h, w
-
-def unwarp(img, src, dst, w, h):
-    print(img.shape)
-    H, _ = cv2.findHomography(src, dst, cv2.RANSAC, 5.0)
-    print('\nThe homography matrix is: \n', H)
-    un_warped = cv2.warpPerspective(img, H, (w, h), flags=cv2.INTER_LINEAR)
-    return un_warped
-
 def get_color(img, x, y):
     size = 3
     points = []
@@ -108,8 +79,8 @@ while True:
     # Rearranging the order of the corner points
     approx_corners = [approx_corners[i] for i in [0, 2, 1, 3]]
     print(approx_corners)
-    destination_corners, h, w = get_destination_points(approx_corners)
-    un_warped = unwarp(frame, np.float32(approx_corners), destination_corners, w, h)
+    destination_corners, h, w = gbip.get_destination_points(approx_corners)
+    un_warped = gbip.unwarp(frame, np.float32(approx_corners), destination_corners, w, h)
     cropped = un_warped[0:h, 0:w]
     cropped = cv2.resize(cropped, (300, 300))
     cropped = cropped[10:290, 10:290]
