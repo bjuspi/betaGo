@@ -1,3 +1,4 @@
+import math
 import cv2
 import numpy as np
 import goBoardImageProcessing as gbip
@@ -24,7 +25,7 @@ cv2.moveWindow(win4, 0, 330)
 cv2.moveWindow(win5, 300, 330)
 cv2.moveWindow(win6, 600, 330)
 
-frame = cv2.imread('image/sample/from-cam/4.jpg')
+frame = cv2.imread('image/sample/from-cam/8.JPG')
 
 frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA)
 canvas = frame.copy()
@@ -38,17 +39,24 @@ cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
 
 approx_corners = gbip.findApproxCorners(cnt)
 cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
-approx_corners = sorted(np.concatenate(approx_corners).tolist())
+approx_corners = np.concatenate(approx_corners).tolist()
+H, W = thresh.shape
+ref_corners = [[0, H], [0, 0], [W, 0], [W, H]]
+sorted_corners = []
+
+for ref_corner in ref_corners:
+    x = [math.dist(ref_corner, corner) for corner in approx_corners]
+    min_position = x.index(min(x))
+    sorted_corners.append(approx_corners[min_position])
+
 print('\nThe corner points are ...\n')
-for index, c in enumerate(approx_corners):
+for index, c in enumerate(sorted_corners):
     character = chr(65 + index)
     print(character, ':', c)
     cv2.putText(canvas, character, tuple(c), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-# Rearranging the order of the corner points
-approx_corners = [approx_corners[i] for i in [0, 2, 1, 3]]
 
-destination_corners, h, w = gbip.getDestinationCorners(approx_corners)
-un_warped = gbip.unwarp(frame, np.float32(approx_corners), destination_corners, w, h)
+destination_corners, h, w = gbip.getDestinationCorners(sorted_corners)
+un_warped = gbip.unwarp(frame, np.float32(sorted_corners), destination_corners, w, h)
 cropped = un_warped[0:h, 0:w]
 cropped = cv2.resize(cropped, (300, 300))
 cropped = cropped[10:290, 10:290]
