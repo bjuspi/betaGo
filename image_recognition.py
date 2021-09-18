@@ -23,7 +23,7 @@ cv2.moveWindow(win5, 300, 330)
 cv2.moveWindow(win6, 600, 330)
 
 def main():
-    image_path = "image/sample/from-cam/9.JPG"
+    image_path = "image/sample/from-cam/12.JPG"
     src = cv2.imread(image_path)
     src = cv2.resize(src, (400, 300), interpolation=cv2.INTER_AREA)
     
