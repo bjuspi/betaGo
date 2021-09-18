@@ -1,9 +1,71 @@
+import math
 import cv2
 import numpy as np
 import scipy.spatial as spatial
 import scipy.cluster as cluster
 from collections import defaultdict
 from statistics import mean
+
+def getTopDownView(thresh, src):
+    canvas = src.copy()
+
+    contour = findContours(thresh)
+    approx_corners = findApproxCorners(contour)
+
+    cv2.drawContours(canvas, contour, -1, (0, 255, 0), 3)
+    cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
+    
+    approx_corners = np.concatenate(approx_corners).tolist()
+
+    H, W = thresh.shape
+    ref_corners = [[0, H], [0, 0], [W, 0], [W, H]]
+    sorted_corners = []
+
+    for ref_corner in ref_corners:
+        min_distances = [math.dist(ref_corner, corner) for corner in approx_corners]
+        min_position = min_distances.index(min(min_distances))
+        sorted_corners.append(approx_corners[min_position])
+
+    print('\nThe corner points are ...\n')
+    for index, c in enumerate(sorted_corners):
+        character = chr(65 + index)
+        print(character, ':', c)
+        cv2.putText(canvas, character, tuple(c), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+
+    destination_corners, h, w = getDestinationCorners(sorted_corners)
+    un_warped = unwarp(src, np.float32(sorted_corners), destination_corners, w, h)
+    cropped = un_warped[0:h, 0:w]
+    cropped = cv2.resize(cropped, (300, 300))
+    cropped = cropped[10:290, 10:290]
+    return cropped, canvas
+
+def getBoardFrame(top_down_edges, top_down):
+    ver_hor_frame = top_down.copy()
+    board_frame = top_down.copy()
+
+    lines = houghLine(top_down_edges)
+    if lines is not None:    
+        h_lines, v_lines = horizontalVerticalLines(lines)
+
+        if h_lines is not None and v_lines is not None:
+            intersection_points = lineIntersections(h_lines, v_lines)
+            points = clusterPoints(intersection_points)
+            augmented_points = augmentPoints(points)
+
+            for index, point in enumerate(augmented_points):
+                x = int(point[1]) # The crop step requires integer, this could cause issues.
+                y = int(point[0])
+                color = getStoneColor(board_frame, x, y)
+                # print(color)
+                # cv2.waitKey(0)                
+                # cv2.circle(board_frame, (int(x), int(y)), radius=5, color=(0, 0, 255), thickness=-1)
+
+            for h_line in h_lines:
+                drawLine(ver_hor_frame, h_line, (255, 0, 0))
+                
+            for v_line in v_lines:
+                drawLine(ver_hor_frame, v_line, (0, 255, 0))
+    return ver_hor_frame, board_frame
 
 def findContours(thresh):
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -36,7 +98,6 @@ def getDestinationCorners(corners):
     return destination_corners, h, w
 
 def unwarp(img, src, dst, w, h):
-    # print(img.shape)
     H, _ = cv2.findHomography(src, dst, cv2.RANSAC, 5.0)
     # print('\nThe homography matrix is: \n', H)
     un_warped = cv2.warpPerspective(img, H, (w, h), flags=cv2.INTER_LINEAR)
@@ -142,3 +203,16 @@ def getStoneColor(img, x, y):
     else: # Empty intersections.
         cv2.circle(img, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(0, 0, 255), thickness=-1)
         return 'empty'
+
+def drawLine(frame, line, color):
+    rho, theta = line
+    if not np.isnan(rho) and not np.isnan(theta):
+        a = np.cos(theta)
+        b = np.sin(theta)
+        x0 = a*rho
+        y0 = b*rho
+        x1 = int(x0 + 1000*(-b))
+        y1 = int(y0 + 1000*(a))
+        x2 = int(x0 - 1000*(-b))
+        y2 = int(y0 - 1000*(a))
+        cv2.line(frame, (x1,y1), (x2,y2), color, 2)
