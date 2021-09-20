@@ -1,3 +1,4 @@
+import math
 import cv2
 import numpy as np
 import goBoardImageProcessing as gbip
@@ -18,8 +19,8 @@ cv2.namedWindow(WINDOW_STONE_RECOGNITION)
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
 cv2.moveWindow(WINDOW_TRESH, 400, 0)
 cv2.moveWindow(WINDOW_PERSPECTIVE_TRANSFORM, 800, 0)
-cv2.moveWindow(WINDOW_LINE_DETECTION, 1080, 0)
-cv2.moveWindow(WINDOW_STONE_RECOGNITION, 1360, 0)
+cv2.moveWindow(WINDOW_LINE_DETECTION, 0, 300)
+cv2.moveWindow(WINDOW_STONE_RECOGNITION, 400, 300)
 
 # CAM_INDEX = 0
 # capture = cv2.VideoCapture(CAM_INDEX)
@@ -48,24 +49,32 @@ while capture_val:
     # The resize propotion is huge, thus a proper interpolation is necessary.
     canvas = frame.copy()
     gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+
     ret, thresh = cv2.threshold(gray, 90, 255, cv2.THRESH_BINARY_INV)
 
     cnt = gbip.findContours(thresh)
     cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
+
     approx_corners = gbip.findApproxCorners(cnt)
     cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
-    approx_corners = sorted(np.concatenate(approx_corners).tolist())
+    approx_corners = np.concatenate(approx_corners).tolist()
+    H, W = thresh.shape
+    ref_corners = [[0, H], [0, 0], [W, 0], [W, H]]
+    sorted_corners = []
 
-    for index, c in enumerate(approx_corners):
+    for ref_corner in ref_corners:
+        x = [math.dist(ref_corner, corner) for corner in approx_corners]
+        min_position = x.index(min(x))
+        sorted_corners.append(approx_corners[min_position])
+
+    print('\nThe corner points are ...\n')
+    for index, c in enumerate(sorted_corners):
         character = chr(65 + index)
-        # print(character, ':', c)
+        print(character, ':', c)
         cv2.putText(canvas, character, tuple(c), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-    # Rearranging the order of the corner points.
-    approx_corners = [approx_corners[i] for i in [0, 2, 1, 3]]
 
-    # Perform perspective transform on the image.
-    destination_corners, h, w = gbip.getDestinationCorners(approx_corners)
-    un_warped = gbip.unwarp(frame, np.float32(approx_corners), destination_corners, w, h)
+    destination_corners, h, w = gbip.getDestinationCorners(sorted_corners)
+    un_warped = gbip.unwarp(frame, np.float32(sorted_corners), destination_corners, w, h)
     cropped = un_warped[0:h, 0:w]
     cropped = cv2.resize(cropped, (300, 300))
     cropped = cropped[10:290, 10:290]
