@@ -21,9 +21,9 @@ cv2.namedWindow(WINDOW_STONE_RECOGNITION)
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
 cv2.moveWindow(WINDOW_TRESH, 400, 0)
 cv2.moveWindow(WINDOW_PERSPECTIVE_TRANSFORM, 800, 0)
-cv2.moveWindow(WINDOW_CANNY_EDGE, 0, 300)
-cv2.moveWindow(WINDOW_LINE_DETECTION, 400, 300)
-cv2.moveWindow(WINDOW_STONE_RECOGNITION, 800, 300)
+cv2.moveWindow(WINDOW_CANNY_EDGE, 0, 330)
+cv2.moveWindow(WINDOW_LINE_DETECTION, 280, 330)
+cv2.moveWindow(WINDOW_STONE_RECOGNITION, 560, 330)
 
 CAM_INDEX = 1
 capture = cv2.VideoCapture(CAM_INDEX)
@@ -33,8 +33,6 @@ if capture.isOpened():
 else:
     capture_val = False
     print("Cannot open the camera of index " + str(CAM_INDEX) + ".")
-# capture_val = True # For testing with static image.
-# frame = cv2.imread('image/sample/from-cam/4.jpg')
 
 stone_position_printed = True # For testing purpose.
 
@@ -46,8 +44,8 @@ is empty or nearly empty. This point position information is supposed to be unch
 and hence can be reused through the entire game.
 
 '''
-
-previous_corners = [-1]
+previous_corners = []
+area_correct = False
 
 while capture_val:
     frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA) 
@@ -64,7 +62,14 @@ while capture_val:
     cnt = gbip.findContours(thresh)
     approx_corners = gbip.findApproxCorners(cnt)
 
-    if len(approx_corners) == 4:
+    cnt_board_move = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnt_board_move = cnt_board_move[0] if len(cnt_board_move) == 2 else cnt_board_move[1]
+    for c in cnt_board_move:
+        area = cv2.contourArea(c)
+        if 10000 < area < 30000: # Constraints change if the board proportion in the image changes. Better set this after fix cam & board's relative position.
+            area_correct = True
+
+    if len(approx_corners) == 4 and area_correct:
         cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
         cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
         approx_corners = np.concatenate(approx_corners).tolist()
@@ -92,7 +97,7 @@ while capture_val:
         ver_hor_frame = cropped.copy()
         board_frame = cropped.copy()
 
-        if approx_corners[0] != previous_corners[0]:
+        if np.array_equal(approx_corners, previous_corners) is False:
             is_moved = True
             point_position_recorded = False
         else:
@@ -148,11 +153,12 @@ while capture_val:
     
     cv2.imshow(WINDOW_PERSPECTIVE_TRANSFORM, cropped)
     cv2.imshow(WINDOW_CANNY_EDGE, cropped_edges)
-    cv2.imshow(WINDOW_LINE_DETECTION, ver_hor_frame)
+    cv2.imshow(WINDOW_LINE_DETECTION, ver_hor_frame) # Not always working and not always required, consider not displaying this.
     cv2.imshow(WINDOW_STONE_RECOGNITION, board_frame)
 
     capture_val, frame = capture.read()
     previous_corners = approx_corners.copy()
+    area_correct = False
 
     if cv2.waitKey(1) == 27: break
 
