@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import goBoardImageProcessing as gbip
-import draw
 
 WINDOW_ORIGINAL = 'Original'
 WINDOW_TRESH = 'Tresh'
@@ -18,8 +17,8 @@ cv2.namedWindow(WINDOW_STONE_RECOGNITION)
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
 cv2.moveWindow(WINDOW_TRESH, 400, 0)
 cv2.moveWindow(WINDOW_PERSPECTIVE_TRANSFORM, 800, 0)
-cv2.moveWindow(WINDOW_LINE_DETECTION, 1080, 0)
-cv2.moveWindow(WINDOW_STONE_RECOGNITION, 1360, 0)
+cv2.moveWindow(WINDOW_LINE_DETECTION, 0, 300)
+cv2.moveWindow(WINDOW_STONE_RECOGNITION, 400, 300)
 
 # CAM_INDEX = 0
 # capture = cv2.VideoCapture(CAM_INDEX)
