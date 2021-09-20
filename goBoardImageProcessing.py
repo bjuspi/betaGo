@@ -12,6 +12,9 @@ def getTopDownView(thresh, src):
     contour = findContours(thresh)
     approx_corners = findApproxCorners(contour)
 
+    if len(approx_corners) != 4:
+        return None, None
+ 
     cv2.drawContours(canvas, contour, -1, (0, 255, 0), 3)
     cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
     
@@ -44,7 +47,7 @@ def getBoardFrame(top_down_edges, top_down):
     board_frame = top_down.copy()
 
     lines = houghLine(top_down_edges)
-    if lines is not None:    
+    if (lines is not None):    
         h_lines, v_lines = horizontalVerticalLines(lines)
 
         if h_lines is not None and v_lines is not None:
@@ -56,9 +59,6 @@ def getBoardFrame(top_down_edges, top_down):
                 x = int(point[1]) # The crop step requires integer, this could cause issues.
                 y = int(point[0])
                 color = getStoneColor(board_frame, x, y)
-                # print(color)
-                # cv2.waitKey(0)                
-                # cv2.circle(board_frame, (int(x), int(y)), radius=5, color=(0, 0, 255), thickness=-1)
 
             for h_line in h_lines:
                 drawLine(ver_hor_frame, h_line, (255, 0, 0))

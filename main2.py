@@ -1,7 +1,7 @@
 import cv2
 import goBoardImageProcessing as gbip
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 win1 = "Original"
 win2 = "Gray"
@@ -43,18 +43,21 @@ while True:
     top_down, board = gbip.getTopDownView(thresh, src)
 
     # Convert to grayscale
-    top_down_gray = cv2.cvtColor(top_down, cv2.COLOR_BGR2GRAY)
+    if (top_down is not None):
+        top_down_gray = cv2.cvtColor(top_down, cv2.COLOR_BGR2GRAY)
 
-    top_down_edges = gbip.cannyEdge(top_down_gray)
+        top_down_edges = gbip.cannyEdge(top_down_gray)
 
-    ver_hor_frame, board_frame = gbip.getBoardFrame(top_down_edges, top_down)
+        # ver_hor_frame, board_frame = gbip.getBoardFrame(top_down_edges, top_down)
 
-    cv2.imshow(win1, board)
+        cv2.imshow(win3, board)
+        cv2.imshow(win4, top_down)
+
+    cv2.imshow(win1, src)
     cv2.imshow(win2, thresh)
-    cv2.imshow(win3, top_down)
-    cv2.imshow(win4, top_down_edges)
-    cv2.imshow(win5, ver_hor_frame)
-    cv2.imshow(win6, board_frame)
+    # cv2.imshow(win5, top_down_edges)
+    # cv2.imshow(win5, ver_hor_frame)
+    # cv2.imshow(win6, board_frame)
 
     c = cv2.waitKey(1)
     if c == ord("q"):
