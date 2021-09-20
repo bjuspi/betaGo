@@ -25,7 +25,7 @@ cv2.moveWindow(WINDOW_CANNY_EDGE, 0, 300)
 cv2.moveWindow(WINDOW_LINE_DETECTION, 400, 300)
 cv2.moveWindow(WINDOW_STONE_RECOGNITION, 800, 300)
 
-CAM_INDEX = 0
+CAM_INDEX = 1
 capture = cv2.VideoCapture(CAM_INDEX)
 
 if capture.isOpened():
@@ -46,6 +46,8 @@ is empty or nearly empty. This point position information is supposed to be unch
 and hence can be reused through the entire game.
 
 '''
+
+previous_corners = [-1]
 
 while capture_val:
     frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA) 
@@ -90,8 +92,14 @@ while capture_val:
         ver_hor_frame = cropped.copy()
         board_frame = cropped.copy()
 
+        if approx_corners[0] != previous_corners[0]:
+            is_moved = True
+            point_position_recorded = False
+        else:
+            is_moved = False
+
         # Record point positions once at the start of the game.
-        if point_position_recorded is False: 
+        if not point_position_recorded and is_moved:
             if lines is not None:
                 h_lines, v_lines = gbip.horizontalVerticalLines(lines)
 
@@ -144,8 +152,7 @@ while capture_val:
     cv2.imshow(WINDOW_STONE_RECOGNITION, board_frame)
 
     capture_val, frame = capture.read()
-
-    
+    previous_corners = approx_corners.copy()
 
     if cv2.waitKey(1) == 27: break
 
