@@ -67,11 +67,11 @@ while capture_val:
         min_position = x.index(min(x))
         sorted_corners.append(approx_corners[min_position])
 
-    print('\nThe corner points are ...\n')
-    for index, c in enumerate(sorted_corners):
-        character = chr(65 + index)
-        print(character, ':', c)
-        cv2.putText(canvas, character, tuple(c), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+    # print('\nThe corner points are ...\n')
+    # for index, c in enumerate(sorted_corners):
+    #     character = chr(65 + index)
+    #     print(character, ':', c)
+    #     cv2.putText(canvas, character, tuple(c), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
     destination_corners, h, w = gbip.getDestinationCorners(sorted_corners)
     un_warped = gbip.unwarp(frame, np.float32(sorted_corners), destination_corners, w, h)
@@ -100,12 +100,12 @@ while capture_val:
 
                 point_position_recorded = True
 
-    if point_position_recorded:
-        for h_line in h_lines:
-            draw.drawLine(ver_hor_frame, h_line, (255, 0, 0))
-        for v_line in v_lines:
-            draw.drawLine(ver_hor_frame, v_line, (0, 255, 0))
+                for h_line in h_lines:
+                    draw.drawLine(ver_hor_frame, h_line, (255, 0, 0))
+                for v_line in v_lines:
+                    draw.drawLine(ver_hor_frame, v_line, (0, 255, 0))
 
+    if point_position_recorded:
         black_stones = []
         white_stones = []
         available_points = []
