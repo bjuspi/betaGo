@@ -5,6 +5,8 @@ import scipy.spatial as spatial
 import scipy.cluster as cluster
 from collections import defaultdict
 from statistics import mean
+import tensorflow as tf
+from keras.preprocessing import image
 
 def findContours(thresh):
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -139,3 +141,17 @@ def getStoneColor(img, x, y, extract_size=5, color="empty"):
     else: # Empty intersections.
         cv2.circle(img, (y, x), radius=5, color=(0, 0, 255), thickness=-1)
         return 'empty'
+
+def getStoneColorCNN(img, x, y, extract_size=15):
+    analyse_area = img[x - extract_size : x + extract_size, 
+                        y - extract_size : y + extract_size]
+
+    reconstructed_model = tf.keras.models.load_model("cnn.h5")
+
+    img = tf.image.resize(analyse_area, (30, 30))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+
+    images = np.vstack([x])
+    classes = reconstructed_model.predict(images)
+    print(classes)
