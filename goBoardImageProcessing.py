@@ -123,12 +123,12 @@ def getStoneColor(img, x, y, extract_size=5, color="empty"):
 
     cv2.imshow('analyse_area', analyse_area)
 
-    if color == "empty":
-        cv2.imwrite(f"image/sample/from-code/empty/{uuid.uuid1()}.jpg", analyse_area)
-    elif color == "white":
-        cv2.imwrite(f"image/sample/from-code/white/{uuid.uuid1()}.jpg", analyse_area)
-    elif color == "black":
-        cv2.imwrite(f"image/sample/from-code/black/{uuid.uuid1()}.jpg", analyse_area)
+    # if color == "empty":
+    #     cv2.imwrite(f"image/sample/from-code/empty/{uuid.uuid1()}.jpg", analyse_area)
+    # elif color == "white":
+    #     cv2.imwrite(f"image/sample/from-code/white/{uuid.uuid1()}.jpg", analyse_area)
+    # elif color == "black":
+    #     cv2.imwrite(f"image/sample/from-code/black/{uuid.uuid1()}.jpg", analyse_area)
 
     if average_color[0] < 50: # Black stones.
         cv2.circle(img, (y, x), radius=5, color=(153, 255, 51), thickness=-1) # The coordinates are y then x, so the sequence needs to be reversed here.
