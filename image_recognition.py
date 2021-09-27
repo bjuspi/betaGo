@@ -25,7 +25,7 @@ cv2.moveWindow(win4, 0, 330)
 cv2.moveWindow(win5, 300, 330)
 cv2.moveWindow(win6, 600, 330)
 
-frame = cv2.imread('image/sample/from-cam/10.JPG')
+frame = cv2.imread('image/sample/from-cam/12.JPG')
 
 frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA)
 canvas = frame.copy()
@@ -81,9 +81,9 @@ if lines is not None:
         for index, point in enumerate(augmented_points):
             x = int(point[1]) # The crop step requires integer, this could cause issues.
             y = int(point[0])
-            # if (index in [22]):
+            # if (index in [19, 28, 36, 53]):
             #     color = gbip.getStoneColor(board_frame, x, y, 15, "white")
-            # elif (index in [36]):
+            # elif (index in [18, 20, 27, 35]):
             #     color = gbip.getStoneColor(board_frame, x, y, 15, "black")
             # else:
             #     color = gbip.getStoneColor(board_frame, x, y, 15)
