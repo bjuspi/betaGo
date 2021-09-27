@@ -25,7 +25,7 @@ cv2.moveWindow(win4, 0, 330)
 cv2.moveWindow(win5, 300, 330)
 cv2.moveWindow(win6, 600, 330)
 
-frame = cv2.imread('image/sample/from-cam/2.JPG')
+frame = cv2.imread('image/sample/from-cam/4.JPG')
 
 frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA)
 canvas = frame.copy()
@@ -81,10 +81,13 @@ if lines is not None:
         for index, point in enumerate(augmented_points):
             x = int(point[1]) # The crop step requires integer, this could cause issues.
             y = int(point[0])
-            # if (index == 14):
-            #     color = gbip.getStoneColor(board_frame, x, y, 15)
-            # elif (index == 49):
-            color = gbip.getStoneColor(board_frame, x, y, 15)
+            if (index in [2, 19, 35, 56]):
+                color = gbip.getStoneColor(board_frame, x, y, 15, "white")
+            elif (index in [0, 27, 47]):
+                color = gbip.getStoneColor(board_frame, x, y, 15, "black")
+            else:
+                color = gbip.getStoneColor(board_frame, x, y, 15)
+            # color = gbip.getStoneColor(board_frame, x, y)
             # print(color)
             # cv2.waitKey(0)                
             cv2.circle(intersection_frame, (int(x), int(y)), radius=5, color=(0, 0, 255), thickness=-1)
