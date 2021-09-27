@@ -1,3 +1,4 @@
+import uuid
 import cv2
 import numpy as np
 import scipy.spatial as spatial
@@ -111,34 +112,30 @@ def augmentPoints(points):
     return augmented_points
 
 # Get Stone color
-def getStoneColor(img, x, y):
-    EXTRACT_AREA_SIDE_LENGTH = 5
-    analyse_area = img[x - EXTRACT_AREA_SIDE_LENGTH : x + EXTRACT_AREA_SIDE_LENGTH, 
-                        y - EXTRACT_AREA_SIDE_LENGTH : y + EXTRACT_AREA_SIDE_LENGTH]
+def getStoneColor(img, x, y, extract_size=5, color="empty"):
+    analyse_area = img[x - extract_size : x + extract_size, 
+                        y - extract_size : y + extract_size]
     
     average_color_per_row = np.average(analyse_area, axis=0)
     average_color = np.average(average_color_per_row, axis=0)
 
     # print(average_color)
 
-    # analyse_gray = cv2.cvtColor(analyse_area, cv2.COLOR_BGR2GRAY)
-    # analyse_edges = cannyEdge(analyse_gray)
-    # lines = houghLine(analyse_edges, 20)
-    # if (lines is None):
-    #     print('No lines found')
-    # else:
-    #     print('Lines found')
+    cv2.imshow('analyse_area', analyse_area)
 
-    # cv2.imshow('analyse_area', analyse_area)
-    # cv2.imshow("test", analyse_gray)
-    
+    # if color == "empty":
+    #     cv2.imwrite(f"image/sample/from-code/empty/{uuid.uuid1()}.jpg", analyse_area)
+    # elif color == "white":
+    #     cv2.imwrite(f"image/sample/from-code/white/{uuid.uuid1()}.jpg", analyse_area)
+    # elif color == "black":
+    #     cv2.imwrite(f"image/sample/from-code/black/{uuid.uuid1()}.jpg", analyse_area)
 
     if average_color[0] < 50: # Black stones.
-        cv2.circle(img, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(153, 255, 51), thickness=-1) # The coordinates are y then x, so the sequence needs to be reversed here.
+        cv2.circle(img, (y, x), radius=5, color=(153, 255, 51), thickness=-1) # The coordinates are y then x, so the sequence needs to be reversed here.
         return 'black'
     elif average_color[0] > 150: # White stones.
-        cv2.circle(img, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(102, 255, 255), thickness=-1)
+        cv2.circle(img, (y, x), radius=5, color=(102, 255, 255), thickness=-1)
         return 'white'
     else: # Empty intersections.
-        cv2.circle(img, (y, x), radius=EXTRACT_AREA_SIDE_LENGTH, color=(0, 0, 255), thickness=-1)
+        cv2.circle(img, (y, x), radius=5, color=(0, 0, 255), thickness=-1)
         return 'empty'
