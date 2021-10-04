@@ -121,9 +121,9 @@ def getStoneColor(img, x, y, extract_size=5, color="empty"):
     average_color_per_row = np.average(analyse_area, axis=0)
     average_color = np.average(average_color_per_row, axis=0)
 
-    # print(average_color)
+    print(average_color)
 
-    cv2.imshow('analyse_area', analyse_area)
+    # cv2.imshow('analyse_area', analyse_area)
 
     # if color == "empty":
     #     cv2.imwrite(f"image/sample/training/empty/{uuid.uuid1()}.jpg", analyse_area)
