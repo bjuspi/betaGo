@@ -96,9 +96,9 @@ def clusterPoints(points):
 def augmentPoints(points):
     points_shape = list(np.shape(points))
     augmented_points = []
-    for row in range(int(points_shape[0] / 8)):
-        start = row * 8
-        end = (row * 8) + 7
+    for row in range(int(points_shape[0] / 10)):
+        start = row * 10
+        end = (row * 10) + 9
         rw_points = points[start:end + 1]
         rw_y = []
         rw_x = []
@@ -121,9 +121,9 @@ def getStoneColor(img, x, y, extract_size=5, color="empty"):
     average_color_per_row = np.average(analyse_area, axis=0)
     average_color = np.average(average_color_per_row, axis=0)
 
-    # print(average_color)
+    print(average_color)
 
-    cv2.imshow('analyse_area', analyse_area)
+    # cv2.imshow('analyse_area', analyse_area)
 
     # if color == "empty":
     #     cv2.imwrite(f"image/sample/training/empty/{uuid.uuid1()}.jpg", analyse_area)
@@ -135,7 +135,7 @@ def getStoneColor(img, x, y, extract_size=5, color="empty"):
     if average_color[0] < 50: # Black stones.
         cv2.circle(img, (y, x), radius=5, color=(153, 255, 51), thickness=-1) # The coordinates are y then x, so the sequence needs to be reversed here.
         return 'black'
-    elif average_color[0] > 150: # White stones.
+    elif average_color[0] > 200: # White stones.
         cv2.circle(img, (y, x), radius=5, color=(102, 255, 255), thickness=-1)
         return 'white'
     else: # Empty intersections.

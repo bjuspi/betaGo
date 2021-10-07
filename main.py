@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import goBoardImageProcessing as gbip
 import draw
+import uuid
 
 WINDOW_ORIGINAL = 'Original'
 WINDOW_THRESH = 'Thresh'
@@ -25,7 +26,7 @@ cv2.moveWindow(WINDOW_CANNY_EDGE, 0, 330)
 cv2.moveWindow(WINDOW_LINE_DETECTION, 280, 330)
 cv2.moveWindow(WINDOW_STONE_RECOGNITION, 560, 330)
 
-CAM_INDEX = 1
+CAM_INDEX = 0
 capture = cv2.VideoCapture(CAM_INDEX)
 
 if capture.isOpened():
@@ -51,9 +52,9 @@ while capture_val:
     frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA) 
     # The resize propotion is huge, thus a proper interpolation is necessary.
     canvas = frame.copy()
-    gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    ret, thresh = cv2.threshold(gray, 90, 255, cv2.THRESH_BINARY_INV)
+    ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
     H, W = thresh.shape
 
     cv2.imshow(WINDOW_ORIGINAL, canvas)
@@ -64,10 +65,11 @@ while capture_val:
 
     cnt_board_move = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnt_board_move = cnt_board_move[0] if len(cnt_board_move) == 2 else cnt_board_move[1]
-    for c in cnt_board_move:
-        area = cv2.contourArea(c)
-        if 10000 < area < 30000: # Constraints change if the board proportion in the image changes. Better set this after fix cam & board's relative position.
-            area_correct = True
+    # for c in cnt_board_move:
+    #     area = cv2.contourArea(c)
+    #     if 10000 < area < 30000: # Constraints change if the board proportion in the image changes. Better set this after fix cam & board's relative position.
+    #         area_correct = True
+    area_correct = True
 
     if len(approx_corners) == 4 and area_correct:
         cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
@@ -114,6 +116,9 @@ while capture_val:
                         points = gbip.clusterPoints(intersection_points)
                         augmented_points = gbip.augmentPoints(points)
 
+                        if len(augmented_points) != 100:
+                            augmented_points = previous_points.copy()
+
                         point_position_recorded = True
 
                         for h_line in h_lines:
@@ -124,7 +129,7 @@ while capture_val:
                         point_position_recorded = False
                         print("Intersection points cannot be found.")
 
-        if point_position_recorded and (len(augmented_points) == 64):
+        if point_position_recorded and (len(augmented_points) == 100):
             black_stones = []
             white_stones = []
             available_points = []
@@ -145,6 +150,7 @@ while capture_val:
             if stone_position_printed:
                 print('Black stones:', black_stones)
                 print('White stones:', white_stones)
+            previous_points = augmented_points.copy()
     else: 
         cropped = np.zeros((H, W, 3), np.uint8)
         cropped_edges = np.zeros((H, W, 3), np.uint8)
@@ -160,7 +166,12 @@ while capture_val:
     previous_corners = approx_corners.copy()
     area_correct = False
 
-    if cv2.waitKey(1) == 27: break
+    c = cv2.waitKey(1)
+
+    if c == 27: 
+        break
+    if c == ord("q"): 
+        cv2.imwrite(f"image/sample/from-code/{uuid.uuid1()}.jpg", cropped)
 
 cv2.destroyAllWindows()
                     
