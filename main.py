@@ -5,21 +5,21 @@ import goBoardImageProcessing as gbip
 import draw
 
 WINDOW_ORIGINAL = 'Original'
-WINDOW_TRESH = 'Tresh'
+WINDOW_THRESH = 'Thresh'
 WINDOW_PERSPECTIVE_TRANSFORM = 'Perspective Transform'
 WINDOW_CANNY_EDGE = 'Canny Edge'
 WINDOW_LINE_DETECTION = 'Line Detection'
 WINDOW_STONE_RECOGNITION = 'Stone Recogntion'
 
 cv2.namedWindow(WINDOW_ORIGINAL)
-cv2.namedWindow(WINDOW_TRESH)
+cv2.namedWindow(WINDOW_THRESH)
 cv2.namedWindow(WINDOW_PERSPECTIVE_TRANSFORM)
 cv2.namedWindow(WINDOW_CANNY_EDGE)
 cv2.namedWindow(WINDOW_LINE_DETECTION)
 cv2.namedWindow(WINDOW_STONE_RECOGNITION)
 
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
-cv2.moveWindow(WINDOW_TRESH, 400, 0)
+cv2.moveWindow(WINDOW_THRESH, 400, 0)
 cv2.moveWindow(WINDOW_PERSPECTIVE_TRANSFORM, 800, 0)
 cv2.moveWindow(WINDOW_CANNY_EDGE, 0, 330)
 cv2.moveWindow(WINDOW_LINE_DETECTION, 280, 330)
@@ -57,7 +57,7 @@ while capture_val:
     H, W = thresh.shape
 
     cv2.imshow(WINDOW_ORIGINAL, canvas)
-    cv2.imshow(WINDOW_TRESH, thresh)
+    cv2.imshow(WINDOW_THRESH, thresh)
 
     cnt = gbip.findContours(thresh)
     approx_corners = gbip.findApproxCorners(cnt)

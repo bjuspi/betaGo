@@ -5,19 +5,19 @@ CAM_INDEX = 1
 
 WINDOW_ORIGINAL = "Original"
 WINDOW_GRAY = "Gray"
-WINDOW_TRESH = "Tresh"
+WINDOW_THRESH = "Thresh"
 WINDOW_TRANSFORMED = "Transformed"
 WINDOW_CROPPED = "Cropped"
 
 cv2.namedWindow(WINDOW_ORIGINAL)
 cv2.namedWindow(WINDOW_GRAY)
-cv2.namedWindow(WINDOW_TRESH)
+cv2.namedWindow(WINDOW_THRESH)
 cv2.namedWindow(WINDOW_TRANSFORMED)
 cv2.namedWindow(WINDOW_CROPPED)
 
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
 cv2.moveWindow(WINDOW_GRAY, 400, 0)
-cv2.moveWindow(WINDOW_TRESH, 800, 0)
+cv2.moveWindow(WINDOW_THRESH, 800, 0)
 cv2.moveWindow(WINDOW_TRANSFORMED, 0, 330)
 cv2.moveWindow(WINDOW_CROPPED, 399, 330)
 
@@ -102,7 +102,7 @@ while captureVal:
     
     cv2.imshow(WINDOW_ORIGINAL, frame)
     cv2.imshow(WINDOW_GRAY, gray)
-    cv2.imshow(WINDOW_TRESH, thresh)
+    cv2.imshow(WINDOW_THRESH, thresh)
 
     # Comment out this if the constraint is not determined yet
     if transformed is not None:
