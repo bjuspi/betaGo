@@ -160,10 +160,10 @@ while capture_val:
                 print("average of empty: ", sum(empty) / 4)
 
             if (len(black_stones) == 4 and len(empty) == 4):
-                print("black_max: ", (sum(black_stones) / 4 + sum(empty) / 4)/2)
+                print("black_max: ", (max(black_stones) + min(empty))/2)
 
             if (len(white_stones) == 4 and len(empty) == 4):
-                print("white_min: ", (sum(white_stones) / 4 + sum(empty) / 4)/2)
+                print("white_min: ", (min(white_stones) + max(empty))/2)
 
             previous_points = augmented_points.copy()
     else: 
