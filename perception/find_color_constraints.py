@@ -3,7 +3,6 @@ import cv2
 import numpy as np
 import goBoardImageProcessing as gbip
 import draw
-import uuid
 
 WINDOW_ORIGINAL = 'Original'
 WINDOW_THRESH = 'Thresh'
@@ -26,7 +25,7 @@ cv2.moveWindow(WINDOW_CANNY_EDGE, 0, 330)
 cv2.moveWindow(WINDOW_LINE_DETECTION, 280, 330)
 cv2.moveWindow(WINDOW_STONE_RECOGNITION, 560, 330)
 
-CAM_INDEX = 0
+CAM_INDEX = 1
 capture = cv2.VideoCapture(CAM_INDEX)
 
 if capture.isOpened():

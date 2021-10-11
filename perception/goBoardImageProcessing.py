@@ -5,8 +5,8 @@ import scipy.spatial as spatial
 import scipy.cluster as cluster
 from collections import defaultdict
 from statistics import mean
-import tensorflow as tf
-from keras.preprocessing import image
+# import tensorflow as tf
+# from keras.preprocessing import image
 
 def findContours(thresh):
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -142,25 +142,25 @@ def getStoneColor(img, x, y, extract_size=5, color="empty"):
         cv2.circle(img, (y, x), radius=5, color=(0, 0, 255), thickness=-1)
         return 'empty'
 
-def getStoneColorCNN(src, x, y, extract_size=15):
-    analyse_area = src[x - extract_size : x + extract_size, 
-                        y - extract_size : y + extract_size]
+# def getStoneColorCNN(src, x, y, extract_size=15):
+#     analyse_area = src[x - extract_size : x + extract_size, 
+#                         y - extract_size : y + extract_size]
 
-    reconstructed_model = tf.keras.models.load_model("1.h5")
+#     reconstructed_model = tf.keras.models.load_model("1.h5")
 
-    img = tf.image.resize(analyse_area, (30, 30))
-    inputs = image.img_to_array(img)
-    inputs = np.expand_dims(inputs, axis=0)
+#     img = tf.image.resize(analyse_area, (30, 30))
+#     inputs = image.img_to_array(img)
+#     inputs = np.expand_dims(inputs, axis=0)
 
-    images = np.vstack([inputs])
-    classes = reconstructed_model.predict(images)
-    if classes[0][0] > 0.8:
-        cv2.circle(src, (y, x), radius=5, color=(153, 255, 51), thickness=-1)
-        return 'black'  
-    elif classes[0][2] > 0.8:
-        cv2.circle(src, (y, x), radius=5, color=(102, 255, 255), thickness=-1)
-        return 'white'  
-    else:
-        cv2.circle(src, (y, x), radius=5, color=(0, 0, 255), thickness=-1)
-        return 'empty'
+#     images = np.vstack([inputs])
+#     classes = reconstructed_model.predict(images)
+#     if classes[0][0] > 0.8:
+#         cv2.circle(src, (y, x), radius=5, color=(153, 255, 51), thickness=-1)
+#         return 'black'  
+#     elif classes[0][2] > 0.8:
+#         cv2.circle(src, (y, x), radius=5, color=(102, 255, 255), thickness=-1)
+#         return 'white'  
+#     else:
+#         cv2.circle(src, (y, x), radius=5, color=(0, 0, 255), thickness=-1)
+#         return 'empty'
     
