@@ -35,6 +35,7 @@ else:
     print("Cannot open the camera of index " + str(CAM_INDEX) + ".")
 
 point_position_recorded = False
+constraints_updated = False
 '''
 When the board is full of stones, the intersection recognition might fail. Thus we 
 only record the intersection positions once at the start of the game, when the board 
@@ -147,23 +148,23 @@ while capture_val:
                 if (index == 22 or index == 27 or index == 72 or index == 77):
                     empty.append(average_color)
 
-            if (len(black_stones) == 4):
+            if (len(black_stones) == 4 and len(empty) == 4 and len(empty) == 4) and constraints_updated is False:
                 print("black stones' average color: ", black_stones)
                 print("average of black: ", sum(black_stones) / 4)
 
-            if (len(white_stones) == 4):
-                print("white stones' average color: ", white_stones)
-                print("average of white: ", sum(white_stones) / 4)
-
-            if (len(empty) == 4):
                 print("empty intersection's average color: ", empty)
                 print("average of empty: ", sum(empty) / 4)
 
-            if (len(black_stones) == 4 and len(empty) == 4):
-                print("black_max: ", (max(black_stones) + min(empty))/2)
+                print("white stones' average color: ", white_stones)
+                print("average of white: ", sum(white_stones) / 4)
 
-            if (len(white_stones) == 4 and len(empty) == 4):
+                print("black_max: ", (max(black_stones) + min(empty))/2)
                 print("white_min: ", (min(white_stones) + max(empty))/2)
+
+                constraints = np.asarray([[(max(black_stones) + min(empty))/2, (min(white_stones) + max(empty))/2]])
+                np.save('constraints.npy', constraints)
+
+                constraints_updated = True
 
             previous_points = augmented_points.copy()
     else: 

@@ -132,10 +132,11 @@ def getStoneColor(img, x, y, extract_size=5, color="empty"):
     # elif color == "black":
     #     cv2.imwrite(f"image/sample/training/black/{uuid.uuid1()}.jpg", analyse_area)
 
-    if average_color[0] < 50: # Black stones.
+    constraints = np.load('constraints.npy')
+    if average_color[0] < constraints[0]: # Black stones.
         cv2.circle(img, (y, x), radius=5, color=(153, 255, 51), thickness=-1) # The coordinates are y then x, so the sequence needs to be reversed here.
         return 'black'
-    elif average_color[0] > 200: # White stones.
+    elif average_color[0] > constraints[1]: # White stones.
         cv2.circle(img, (y, x), radius=5, color=(102, 255, 255), thickness=-1)
         return 'white'
     else: # Empty intersections.
