@@ -83,7 +83,7 @@ def applyAreaConstraints(thresh):
     cnt_board_move = cnt_board_move[0] if len(cnt_board_move) == 2 else cnt_board_move[1]
     for c in cnt_board_move:
         area = cv2.contourArea(c)
-        if 10000 < area < 30000: ### Change to a import variable
+        if 10000 < area < 30000:
             return True
     return False
 
