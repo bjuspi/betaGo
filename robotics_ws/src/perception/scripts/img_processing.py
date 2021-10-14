@@ -28,11 +28,12 @@ def imgProcessing(frame, previous_cnrs, previous_intxns):
             x = [math.dist(ref_cnr, cnr) for cnr in approx_cnrs]
             min_posn = x.index(min(x))
             sorted_cnrs.append(approx_cnrs[min_posn])
-        destn_cnrs, h, w = getDestinationCorners(sorted_cnrs)
-        unwarpped = unwarpPerspective(frame, np.float32(sorted_cnrs), destn_cnrs, w, h)
+        board_cnrs, h, w = getBoardCorners(sorted_cnrs)
+        unwarpped = unwarpPerspective(frame, np.float32(sorted_cnrs), board_cnrs, w, h)
         
         # Remove the outer border of the board, else the board's border lines will be included in the line detection step.
-        cropped = unwarpped[0:h, 0:w]
+        cropped_side_len = min(unwarpped.shape[0], unwarpped.shape[1])
+        cropped = cv2.resize(unwarpped, (cropped_side_len, cropped_side_len))
         cropped = cropped[10:-10, 10:-10]
 
         # If the relative position between camera and board changes, get intersections' coordinates.
@@ -87,7 +88,7 @@ def applyAreaConstraints(thresh):
             return True
     return False
 
-def getDestinationCorners(cnrs):
+def getBoardCorners(cnrs):
     # Corners: A -> B -> C -> D
     w1 = np.sqrt((cnrs[0][0] - cnrs[3][0]) ** 2 + (cnrs[0][1] - cnrs[3][1]) ** 2)
     w2 = np.sqrt((cnrs[1][0] - cnrs[2][0]) ** 2 + (cnrs[1][1] - cnrs[2][1]) ** 2)
@@ -97,8 +98,8 @@ def getDestinationCorners(cnrs):
     h2 = np.sqrt((cnrs[2][0] - cnrs[3][0]) ** 2 + (cnrs[2][1] - cnrs[3][1]) ** 2)
     h = max(int(h1), int(h2))
 
-    destination_cnrs = np.float32([(0, h - 1), (0, 0), (w - 1, 0), (w - 1, h - 1)])
-    return destination_cnrs, h, w
+    board_cnrs = np.float32([(0, h - 1), (0, 0), (w - 1, 0), (w - 1, h - 1)])
+    return board_cnrs, h, w
 
 def unwarpPerspective(img, src, dst, w, h):
     H, _ = cv2.findHomography(src, dst, cv2.RANSAC, 5.0)
