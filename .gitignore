@@ -11,3 +11,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# exclude everything except directory foo/bar
+robotics_ws/build/
+robotics_ws/devel/*
+robotics_ws/.catkin_workspace
