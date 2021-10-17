@@ -47,7 +47,7 @@ previous_corners = []
 area_correct = False
 
 while capture_val:
-    frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA) 
+    frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA)
     # The resize propotion is huge, thus a proper interpolation is necessary.
     canvas = frame.copy()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -61,8 +61,10 @@ while capture_val:
     cnt = gbip.findContours(thresh)
     approx_corners = gbip.findApproxCorners(cnt)
 
-    cnt_board_move = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cnt_board_move = cnt_board_move[0] if len(cnt_board_move) == 2 else cnt_board_move[1]
+    cnt_board_move = cv2.findContours(
+        thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnt_board_move = cnt_board_move[0] if len(
+        cnt_board_move) == 2 else cnt_board_move[1]
 
     if len(approx_corners) == 4:
         cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
@@ -77,7 +79,8 @@ while capture_val:
             sorted_corners.append(approx_corners[min_position])
 
         destination_corners, h, w = gbip.getDestinationCorners(sorted_corners)
-        un_warped = gbip.unwarp(frame, np.float32(sorted_corners), destination_corners, w, h)
+        un_warped = gbip.unwarp(frame, np.float32(
+            sorted_corners), destination_corners, w, h)
         cropped = un_warped[0:h, 0:w]
         cropped = cv2.resize(cropped, (300, 300))
         cropped = cropped[10:290, 10:290]
@@ -105,7 +108,8 @@ while capture_val:
 
                 if h_lines is not None and v_lines is not None:
                     try:
-                        intersection_points = gbip.lineIntersections(h_lines, v_lines)
+                        intersection_points = gbip.lineIntersections(
+                            h_lines, v_lines)
                         points = gbip.clusterPoints(intersection_points)
                         augmented_points = gbip.augmentPoints(points)
 
@@ -133,11 +137,12 @@ while capture_val:
 
             # Analyse the stone condition (black/white/empty) at each intersection.
             for index, point in enumerate(augmented_points):
-                x = int(point[1]) # The crop step requires integer, this could cause issues.
+                # The crop step requires integer, this could cause issues.
+                x = int(point[1])
                 y = int(point[0])
-                
-                analyse_area = board_frame[x - 5 : x + 5, y - 5 : y + 5]
-    
+
+                analyse_area = board_frame[x - 5: x + 5, y - 5: y + 5]
+
                 average_color_per_row = np.average(analyse_area, axis=0)
                 average_color = np.average(average_color_per_row, axis=0)
 
@@ -161,29 +166,29 @@ while capture_val:
                 print("black_max: ", (max(black_stones) + min(empty))/2)
                 print("white_min: ", (min(white_stones) + max(empty))/2)
 
-                constraints = np.asarray([[(max(black_stones) + min(empty))/2, (min(white_stones) + max(empty))/2]])
+                constraints = np.asarray(
+                    [[(max(black_stones) + min(empty))/2, (min(white_stones) + max(empty))/2]])
                 np.save('constraints.npy', constraints)
 
                 constraints_updated = True
 
             previous_points = augmented_points.copy()
-    else: 
+    else:
         cropped = np.zeros((H, W, 3), np.uint8)
         cropped_edges = np.zeros((H, W, 3), np.uint8)
         ver_hor_frame = np.zeros((H, W, 3), np.uint8)
         board_frame = np.zeros((H, W, 3), np.uint8)
-    
+
     cv2.imshow(WINDOW_PERSPECTIVE_TRANSFORM, cropped)
     cv2.imshow(WINDOW_CANNY_EDGE, cropped_edges)
-    cv2.imshow(WINDOW_LINE_DETECTION, ver_hor_frame) # Not always working and not always required, consider not displaying this.
+    # Not always working and not always required, consider not displaying this.
+    cv2.imshow(WINDOW_LINE_DETECTION, ver_hor_frame)
     cv2.imshow(WINDOW_STONE_RECOGNITION, board_frame)
 
     capture_val, frame = capture.read()
     previous_corners = approx_corners.copy()
 
-    if cv2.waitKey(1) == 27: 
+    if cv2.waitKey(1) == 27:
         break
 
 cv2.destroyAllWindows()
-                    
-

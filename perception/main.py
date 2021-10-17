@@ -26,7 +26,7 @@ cv2.moveWindow(WINDOW_CANNY_EDGE, 0, 330)
 cv2.moveWindow(WINDOW_LINE_DETECTION, 280, 330)
 cv2.moveWindow(WINDOW_STONE_RECOGNITION, 560, 330)
 
-CAM_INDEX = 0
+CAM_INDEX = 1
 capture = cv2.VideoCapture(CAM_INDEX)
 
 if capture.isOpened():
@@ -57,9 +57,6 @@ while capture_val:
     ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
     H, W = thresh.shape
 
-    cv2.imshow(WINDOW_ORIGINAL, canvas)
-    cv2.imshow(WINDOW_THRESH, thresh)
-
     cnt = gbip.findContours(thresh)
     approx_corners = gbip.findApproxCorners(cnt)
 
@@ -71,9 +68,13 @@ while capture_val:
     #         area_correct = True
     area_correct = True
 
+    cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
+    cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
+
     if len(approx_corners) == 4 and area_correct:
-        cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
-        cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
+        # cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
+        # cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
+
         approx_corners = np.concatenate(approx_corners).tolist()
         ref_corners = [[0, H], [0, 0], [W, 0], [W, H]]
         sorted_corners = []
@@ -157,6 +158,9 @@ while capture_val:
         ver_hor_frame = np.zeros((H, W, 3), np.uint8)
         board_frame = np.zeros((H, W, 3), np.uint8)
     
+    cv2.imshow(WINDOW_ORIGINAL, canvas)
+    cv2.imshow(WINDOW_THRESH, thresh)
+
     cv2.imshow(WINDOW_PERSPECTIVE_TRANSFORM, cropped)
     cv2.imshow(WINDOW_CANNY_EDGE, cropped_edges)
     cv2.imshow(WINDOW_LINE_DETECTION, ver_hor_frame) # Not always working and not always required, consider not displaying this.
