@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # license removed for brevity
 import rospy
+import scipy
 from std_msgs.msg import String
  
 def talker():

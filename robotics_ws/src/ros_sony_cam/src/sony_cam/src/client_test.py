@@ -40,8 +40,8 @@ def take_pics():
             rospy.loginfo("Made request: "+resp.status_message)
             time.sleep(2)
             
-    except rospy.ServiceException, e:
-        print "Service call failed: %s"%e
+    except rospy.ServiceException as e:
+        print("Service call failed: " + e)
 
 if __name__ == "__main__":
     take_pics()

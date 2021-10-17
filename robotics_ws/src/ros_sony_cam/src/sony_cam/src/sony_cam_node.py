@@ -2,27 +2,23 @@
 
 """
 Main node for Sony Camera
-
 ROS Node - Sony Camera
 Copyright (C) 2018  Alexander Marin
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
-
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 
 import rospy
 import time
-import urllib2
+import urllib.request as urllib2
 from genpy.rostime import Time
 from sensor_msgs.msg import CompressedImage
 from polled_camera.srv import GetPolledImage, GetPolledImageResponse
@@ -238,6 +234,7 @@ class CameraHandler:
             self.success_liveview = True
 
         except Exception as err:
+            print(err)
             rospy.logerr("Couldn't get liveview")
 
     def reset_liveview(self):
