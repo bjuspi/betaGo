@@ -26,7 +26,7 @@ cv2.moveWindow(WINDOW_CANNY_EDGE, 0, 330)
 cv2.moveWindow(WINDOW_LINE_DETECTION, 280, 330)
 cv2.moveWindow(WINDOW_STONE_RECOGNITION, 560, 330)
 
-CAM_INDEX = 1
+CAM_INDEX = 0
 capture = cv2.VideoCapture(CAM_INDEX)
 
 if capture.isOpened():
@@ -35,7 +35,7 @@ else:
     capture_val = False
     print("Cannot open the camera of index " + str(CAM_INDEX) + ".")
 
-stone_position_printed = True # For testing purpose.
+stone_position_printed = False # For testing purpose.
 
 point_position_recorded = False
 '''
@@ -46,6 +46,7 @@ and hence can be reused through the entire game.
 
 '''
 previous_corners = []
+previous_blacks = []
 area_correct = False
 
 while capture_val:
@@ -88,7 +89,7 @@ while capture_val:
         un_warped = gbip.unwarp(frame, np.float32(sorted_corners), destination_corners, w, h)
         cropped = un_warped[0:h, 0:w]
         cropped = cv2.resize(cropped, (300, 300))
-        cropped = cropped[10:290, 10:290]
+        cropped = cropped[15:-15, 15:-15]
 
         cropped_gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 
@@ -148,10 +149,17 @@ while capture_val:
                 else:
                     available_points.append(index)
 
+            new_black = set(black_stones) - set(previous_blacks)
+            if (len(new_black) > 0):
+                print("New black: ", new_black)
+                previous_blacks = black_stones.copy()
+            
             if stone_position_printed:
                 print('Black stones:', black_stones)
                 print('White stones:', white_stones)
+
             previous_points = augmented_points.copy()
+            
     else: 
         cropped = np.zeros((H, W, 3), np.uint8)
         cropped_edges = np.zeros((H, W, 3), np.uint8)
