@@ -122,10 +122,10 @@ class image_feature:
 
         #### Create Float32MultiArray msg ####
         msg = Float32MultiArray()
-        # msg.header.stamp = rospy.Time.now()
+        msg.header.stamp = rospy.Time.now()
         msg.data = [1.0, 1.0]
         # # Publish new image
-        rospy.loginfo("publishing")
+        rospy.loginfo(msg)
         self.image_pub.publish(msg)
         
         # self.subscriber.unregister()
