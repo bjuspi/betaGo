@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """OpenCV feature detectors with ros CompressedImage Topics in python.
 
 This example subscribes to a ros topic containing sensor_msgs 
@@ -28,7 +28,7 @@ from sensor_msgs.msg import CompressedImage
 # We do not use cv_bridge it does not support CompressedImage in python
 # from cv_bridge import CvBridge, CvBridgeError
 
-# import goBoardImageProcessing as gbip
+import goBoardImageProcessing as gbip
 
 VERBOSE=True
 
@@ -40,55 +40,55 @@ WINDOW_LINE_DETECTION = 'Line Detection'
 WINDOW_STONE_RECOGNITION = 'Stone Recogntion'
 
 cv2.namedWindow(WINDOW_ORIGINAL)
-# cv2.namedWindow(WINDOW_THRESH)
-# cv2.namedWindow(WINDOW_PERSPECTIVE_TRANSFORM)
+cv2.namedWindow(WINDOW_THRESH)
+cv2.namedWindow(WINDOW_PERSPECTIVE_TRANSFORM)
 # cv2.namedWindow(WINDOW_CANNY_EDGE)
 # cv2.namedWindow(WINDOW_LINE_DETECTION)
 # cv2.namedWindow(WINDOW_STONE_RECOGNITION)
 
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
-# cv2.moveWindow(WINDOW_THRESH, 400, 0)
-# cv2.moveWindow(WINDOW_PERSPECTIVE_TRANSFORM, 800, 0)
+cv2.moveWindow(WINDOW_THRESH, 400, 0)
+cv2.moveWindow(WINDOW_PERSPECTIVE_TRANSFORM, 800, 0)
 # cv2.moveWindow(WINDOW_CANNY_EDGE, 0, 330)
 # cv2.moveWindow(WINDOW_LINE_DETECTION, 280, 330)
 # cv2.moveWindow(WINDOW_STONE_RECOGNITION, 560, 330)
 
-# class image_feature:
+class image_feature:
 
-#     def __init__(self):
-#         '''Initialize ros publisher, ros subscriber'''
-#         # topic where we publish
-#         # self.image_pub = rospy.Publisher("/output/image_raw/compressed",
-#         #     CompressedImage)
-#         # self.bridge = CvBridge()
+    def __init__(self):
+        '''Initialize ros publisher, ros subscriber'''
+        # topic where we publish
+        # self.image_pub = rospy.Publisher("/output/image_raw/compressed",
+        #     CompressedImage)
+        # self.bridge = CvBridge()
 
-#         # subscribed Topic
-#         self.subscriber = rospy.Subscriber("/liveview/compressed",
-#             CompressedImage, self.callback,  queue_size = 1)
-#         if VERBOSE :
-#             print("subscribed to /liveview/compressed")
+        # subscribed Topic
+        self.subscriber = rospy.Subscriber("/liveview/compressed",
+            CompressedImage, self.callback,  queue_size = 1)
+        if VERBOSE :
+            print("subscribed to /liveview/compressed")
 
 
-    # def callback(self, ros_data):
-    #     '''Callback function of subscribed topic. 
-    #     Here images get converted and features detected'''
-    #     if VERBOSE :
-    #         print('received image of type: "%s"' % ros_data.format)
+    def callback(self, ros_data):
+        '''Callback function of subscribed topic. 
+        Here images get converted and features detected'''
+        if VERBOSE :
+            print('received image of type: "%s"' % ros_data.format)
 
-        #### direct conversion to CV2 ####
-        # np_arr = np.fromstring(ros_data.data, np.uint8)
-        # image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV >= 3.0:
+        ### direct conversion to CV2 ####
+        np_arr = np.fromstring(ros_data.data, np.uint8)
+        image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV >= 3.0:
         
         #Main Perception
-        # frame = cv2.resize(image_np, (400, 300), interpolation=cv2.INTER_AREA) 
-        # canvas = frame.copy()
-        # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        frame = cv2.resize(image_np, (400, 300), interpolation=cv2.INTER_AREA) 
+        canvas = frame.copy()
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
-        # H, W = thresh.shape
+        ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
+        H, W = thresh.shape
 
-        # cv2.imshow(WINDOW_ORIGINAL, image_np)
-        # cv2.imshow(WINDOW_THRESH, thresh)
+        cv2.imshow(WINDOW_ORIGINAL, frame)
+        cv2.imshow(WINDOW_THRESH, thresh)
 
         # cnt = gbip.findContours(thresh)
         # approx_corners = gbip.findApproxCorners(cnt)
@@ -116,10 +116,10 @@ cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
         #     cropped = cv2.resize(cropped, (300, 300))
         #     cropped = cropped[10:290, 10:290]
         
-        # cv2.imshow(WINDOW_PERSPECTIVE_TRANSFORM, cropped)
-        # previous_corners = approx_corners.copy()
+        cv2.imshow(WINDOW_PERSPECTIVE_TRANSFORM, cropped)
+        previous_corners = approx_corners.copy()
 
-        # cv2.waitKey(2)
+        cv2.waitKey(2)
 
         #### Create CompressedIamge ####
         # msg = CompressedImage()
@@ -131,48 +131,48 @@ cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
         
         # self.subscriber.unregister()
 
-# def main(args):
-#     '''Initializes and cleanup ros node'''
-#     ic = image_feature()
-#     rospy.init_node('image_feature', anonymous=True)
-#     try:
-#         rospy.spin()
-#     except KeyboardInterrupt:
-#         print("Shutting down ROS Image feature detector module")
-#     cv2.destroyAllWindows()
-
-# if __name__ == '__main__':
-#     main(sys.argv)
-
-def callback(ros_data):
-    if VERBOSE :
-        print('received image of type: "%s"' % ros_data.format)
-
-    #### direct conversion to CV2 ####
-    np_arr = np.fromstring(ros_data.data, np.uint8)
-    image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV >= 3.0:
-    # print(image_np)
-    cv2.imshow(WINDOW_ORIGINAL, image_np)
-    cv2.waitKey(10)
-    
-def listener():
-
-    # In ROS, nodes are uniquely named. If two nodes with the same
-    # name are launched, the previous one is kicked off. The
-    # anonymous=True flag means that rospy will choose a unique
-    # name for our 'listener' node so that multiple listeners can
-    # run simultaneously.
-    rospy.init_node('listener1', anonymous=True)
-
-    rospy.Subscriber("/liveview/compressed", CompressedImage, callback, queue_size=1)
-
-    # spin() simply keeps python from exiting until this node is stopped
-    rospy.spin()
-    # try:
-    #     rospy.spin()
-    # except KeyboardInterrupt:
-    #     print("Shutting down ROS Image feature detector module")
+def main(args):
+    '''Initializes and cleanup ros node'''
+    ic = image_feature()
+    rospy.init_node('image_feature', anonymous=True)
+    try:
+        rospy.spin()
+    except KeyboardInterrupt:
+        print("Shutting down ROS Image feature detector module")
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    listener()
+    main(sys.argv)
+
+# def callback(ros_data):
+#     if VERBOSE :
+#         print('received image of type: "%s"' % ros_data.format)
+
+#     #### direct conversion to CV2 ####
+#     np_arr = np.fromstring(ros_data.data, np.uint8)
+#     image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV >= 3.0:
+#     # print(image_np)
+#     cv2.imshow(WINDOW_ORIGINAL, image_np)
+#     cv2.waitKey(10)
+    
+# def listener():
+
+#     # In ROS, nodes are uniquely named. If two nodes with the same
+#     # name are launched, the previous one is kicked off. The
+#     # anonymous=True flag means that rospy will choose a unique
+#     # name for our 'listener' node so that multiple listeners can
+#     # run simultaneously.
+#     rospy.init_node('listener1', anonymous=True)
+
+#     rospy.Subscriber("/liveview/compressed", CompressedImage, callback, queue_size=1)
+
+#     # spin() simply keeps python from exiting until this node is stopped
+#     rospy.spin()
+#     # try:
+#     #     rospy.spin()
+#     # except KeyboardInterrupt:
+#     #     print("Shutting down ROS Image feature detector module")
+#     cv2.destroyAllWindows()
+
+# if __name__ == '__main__':
+#     listener()

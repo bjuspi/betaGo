@@ -5,11 +5,13 @@ import numpy as np
 import scipy.spatial as spatial
 import scipy.cluster as cluster
 from collections import defaultdict
-from statistics import mean
+# from statistics import mean
 # import tensorflow as tf
 # from keras.preprocessing import image
 
 def findContours(thresh):
+    x = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    print(len(x))
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     return sorted(contours, key=cv2.contourArea, reverse=True)[0]
 
@@ -107,7 +109,7 @@ def augmentPoints(points):
             x, y = point
             rw_y.append(y)
             rw_x.append(x)
-        y_mean = mean(rw_y)
+        y_mean = int(np.mean(rw_y))
         for i in range(len(rw_x)):
             point = (rw_x[i], y_mean)
             augmented_points.append(point)
