@@ -66,9 +66,10 @@ while capture_val:
     cnt_board_move = cnt_board_move[0] if len(
         cnt_board_move) == 2 else cnt_board_move[1]
 
+    cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
+    cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
+
     if len(approx_corners) == 4:
-        cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
-        cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
         approx_corners = np.concatenate(approx_corners).tolist()
         ref_corners = [[0, H], [0, 0], [W, 0], [W, H]]
         sorted_corners = []
@@ -128,12 +129,7 @@ while capture_val:
 
         if point_position_recorded and (len(augmented_points) == 100):
             black_stones = []
-            white_stones = []
             empty = []
-
-            ave_black = 0
-            ave_white = 0
-            ave_empty = 0
 
             # Analyse the stone condition (black/white/empty) at each intersection.
             for index, point in enumerate(augmented_points):
@@ -146,31 +142,21 @@ while capture_val:
                 average_color_per_row = np.average(analyse_area, axis=0)
                 average_color = np.average(average_color_per_row, axis=0)
 
-                if (index == 0 or index == 9 or index == 90 or index == 99):
-                    black_stones.append(average_color)
-                if (index == 44 or index == 45 or index == 54 or index == 55):
-                    black_stones.append(average_color)
-                if (index == 22 or index == 27 or index == 72 or index == 77):
+                average_color = sum(average_color) / len(average_color)
+
+                if (index == 0 | index == 9 | index == 90 | index == 99):
+                    if(average_color < 90):
+                        print('approximately within the range')
+                        black_stones.append(average_color)
+                    else:
+                        print('black stone not placed in point 0')
+                else:
                     empty.append(average_color)
 
-            if (len(black_stones) == 4 and len(empty) == 4 and len(empty) == 4) and constraints_updated is False:
-                print("black stones' average color: ", black_stones)
-                print("average of black: ", sum(black_stones) / 4)
+            np.save('./perception/constraints.npy', np.asarray([(max(black_stones) + min(empty)) / 2]))
+            print('saved')
 
-                print("empty intersection's average color: ", empty)
-                print("average of empty: ", sum(empty) / 4)
-
-                print("white stones' average color: ", white_stones)
-                print("average of white: ", sum(white_stones) / 4)
-
-                print("black_max: ", (max(black_stones) + min(empty))/2)
-                print("white_min: ", (min(white_stones) + max(empty))/2)
-
-                constraints = np.asarray(
-                    [[(max(black_stones) + min(empty))/2, (min(white_stones) + max(empty))/2]])
-                np.save('constraints.npy', constraints)
-
-                constraints_updated = True
+            constraints_updated = True
 
             previous_points = augmented_points.copy()
     else:

@@ -203,9 +203,10 @@ def hasBlackStone(img, x, y):
     anlys_area = img[x-5:x+5, y-5:y+5]
     ave_clr_per_row = np.average(anlys_area, axis=0)
     ave_clr = np.average(ave_clr_per_row, axis=0)
+    ave_clr = sum(ave_clr) / len(ave_clr)
 
-    bk_clr_con = np.load('black_stone_color_constraint.npy')
-    if ave_clr[0] < bk_clr_con[0]:
+    bk_clr_con = np.load('./perception/black_stone_color_constraint.npy')
+    if ave_clr < bk_clr_con[0]:
         cv2.circle(img, (y, x), radius=5, color=(153, 255, 51), thickness=-1)
         return True
     else:
@@ -237,14 +238,12 @@ def colorCalibration(cropped, previous_intxns):
                                int(intxn[0])-5: int(intxn[0])+5]
         ave_clr_per_row = np.average(analyse_area, axis=0)
         ave_clr = np.average(ave_clr_per_row, axis=0)
+        ave_clr = sum(ave_clr) / len(ave_clr)
 
         if (index == 0 | index == 9 | index == 90 | index == 99):
             bk_ave_clrs.append(ave_clr)
         else:
             mt_ave_clrs.append(ave_clr)
 
-    bk_ave_clr = sum(bk_ave_clrs)/len(bk_ave_clrs)
-    mts_ave_clr = sum(mt_ave_clrs)/len(mt_ave_clrs)
-
-    np.save('black_stone_color_constraint',
-            np.asarray([(bk_ave_clr + mts_ave_clr)/2]))
+    np.save('black_stone_color_constraint.npy',
+            np.asarray([(max(bk_ave_clrs) + min(mt_ave_clrs))/2]))
