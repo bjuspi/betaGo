@@ -209,14 +209,13 @@ def listener():
             # print(sorted_corners)
         else: 
             cropped = np.zeros((H, W, 3), np.uint8)
-        print("countor")
-        print(cnt.type)
+
         cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
-        cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
+       # cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
 
         cv2.imshow(WINDOW_ORIGINAL, canvas)
         cv2.imshow(WINDOW_THRESH, thresh)
-        cv2.imshow(WINDOW_PERSPECTIVE_TRANSFORM, cropped)
+        # cv2.imshow(WINDOW_PERSPECTIVE_TRANSFORM, cropped)
 
         cv2.waitKey(2)
 
