@@ -1,17 +1,13 @@
-#!/usr/bin/env python3
 import uuid
 import cv2
 import numpy as np
 import scipy.spatial as spatial
 import scipy.cluster as cluster
 from collections import defaultdict
-# from statistics import mean
 # import tensorflow as tf
 # from keras.preprocessing import image
 
 def findContours(thresh):
-    x = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    print(len(x))
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     return sorted(contours, key=cv2.contourArea, reverse=True)[0]
 
@@ -124,7 +120,7 @@ def getStoneColor(img, x, y, extract_size=5, color="empty"):
     average_color_per_row = np.average(analyse_area, axis=0)
     average_color = np.average(average_color_per_row, axis=0)
 
-    print(average_color)
+    # print(average_color)
 
     # cv2.imshow('analyse_area', analyse_area)
 
@@ -135,7 +131,9 @@ def getStoneColor(img, x, y, extract_size=5, color="empty"):
     # elif color == "black":
     #     cv2.imwrite(f"image/sample/training/black/{uuid.uuid1()}.jpg", analyse_area)
 
-    constraints = np.load('constraints.npy')
+    # constraints = np.load('./constraints.npy')
+    constraints = [70, 200]
+
     if average_color[0] < constraints[0]: # Black stones.
         cv2.circle(img, (y, x), radius=5, color=(153, 255, 51), thickness=-1) # The coordinates are y then x, so the sequence needs to be reversed here.
         return 'black'

@@ -25,7 +25,7 @@ import rospy
 
 # Ros Messages
 from sensor_msgs.msg import CompressedImage
-from geometry_msgs.msg import Point32
+from std_msgs.msg import Float32MultiArray
 # We do not use cv_bridge it does not support CompressedImage in python
 # from cv_bridge import CvBridge, CvBridgeError
 
@@ -59,7 +59,7 @@ class image_feature:
     def __init__(self):
         '''Initialize ros publisher, ros subscriber'''
         # topic where we publish
-        self.image_pub = rospy.Publisher("/output/black_position", Point32)
+        self.image_pub = rospy.Publisher("/output/black_position", Float32MultiArray)
 
         # subscribed Topic
         self.subscriber = rospy.Subscriber("/liveview/compressed",
@@ -120,14 +120,12 @@ class image_feature:
 
         cv2.waitKey(2)
 
-        #### Create Point32 msg ####
-        msg = Point32()
-        # msg.header.stamp = rospy.Time.now()
-        msg.x = 1.0
-        msg.y = 1.0
-        msg.z = 1.0
+        #### Create Float32MultiArray msg ####
+        msg = Float32MultiArray()
+        msg.header.stamp = rospy.Time.now()
+        msg.data = [1.0, 1.0]
         # # Publish new image
-        rospy.loginfo("publishing")
+        rospy.loginfo(msg)
         self.image_pub.publish(msg)
         
         # self.subscriber.unregister()
