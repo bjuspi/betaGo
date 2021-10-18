@@ -211,6 +211,24 @@ def hasBlackStone(img, x, y):
     else:
         return False
 
+
+def findAreaConstraints(frame):
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
+
+    cnt_board_move = cv2.findContours(
+        thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnt_board_move = cnt_board_move[0] if len(
+        cnt_board_move) == 2 else cnt_board_move[1]
+    for c in cnt_board_move:
+        area = cv2.contourArea(c)
+        peri = cv2.arcLength(c, True)
+        approx = cv2.approxPolyDP(c, 0.015 * peri, True)
+
+        if len(approx) == 4:
+            print("Current area is " + str(area) + ".")
+
+
 def colorCalibration(cropped, previous_intxns):
     for index, intxn in enumerate(previous_intxns):
         bk_ave_clrs, mt_ave_clrs = ([],)*2
@@ -228,18 +246,5 @@ def colorCalibration(cropped, previous_intxns):
     bk_ave_clr = sum(bk_ave_clrs)/len(bk_ave_clrs)
     mts_ave_clr = sum(mt_ave_clrs)/len(mt_ave_clrs)
 
-    np.save('black_stone_color_constraint', np.asarray([(bk_ave_clr + mts_ave_clr)/2]))
-
-def findAreaConstraints(frame):
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
-
-    cnt_board_move = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cnt_board_move = cnt_board_move[0] if len(cnt_board_move) == 2 else cnt_board_move[1]
-    for c in cnt_board_move:
-        area = cv2.contourArea(c)
-        peri = cv2.arcLength(c, True)
-        approx = cv2.approxPolyDP(c, 0.015 * peri, True)
-
-        if len(approx) == 4:
-            print("Current area is " + str(area) + ".")
+    np.save('black_stone_color_constraint',
+            np.asarray([(bk_ave_clr + mts_ave_clr)/2]))
