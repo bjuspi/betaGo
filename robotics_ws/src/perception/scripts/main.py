@@ -25,6 +25,7 @@ import rospy
 
 # Ros Messages
 from sensor_msgs.msg import CompressedImage
+from geometry_msgs.msg import Point32
 # We do not use cv_bridge it does not support CompressedImage in python
 # from cv_bridge import CvBridge, CvBridgeError
 
@@ -58,9 +59,7 @@ class image_feature:
     def __init__(self):
         '''Initialize ros publisher, ros subscriber'''
         # topic where we publish
-        # self.image_pub = rospy.Publisher("/output/image_raw/compressed",
-        #     CompressedImage)
-        # self.bridge = CvBridge()
+        self.image_pub = rospy.Publisher("/output/black_position", Point32)
 
         # subscribed Topic
         self.subscriber = rospy.Subscriber("/liveview/compressed",
@@ -121,13 +120,15 @@ class image_feature:
 
         cv2.waitKey(2)
 
-        #### Create CompressedIamge ####
-        # msg = CompressedImage()
+        #### Create Point32 msg ####
+        msg = Point32()
         # msg.header.stamp = rospy.Time.now()
-        # msg.format = "jpeg"
-        # msg.data = np.array(cv2.imencode('.jpg', image_np)[1]).tostring()
+        msg.x = 1.0
+        msg.y = 1.0
+        msg.z = 1.0
         # # Publish new image
-        # self.image_pub.publish(msg)
+        rospy.loginfo("publishing")
+        self.image_pub.publish(msg)
         
         # self.subscriber.unregister()
 
@@ -143,36 +144,3 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv)
-
-# def callback(ros_data):
-#     if VERBOSE :
-#         print('received image of type: "%s"' % ros_data.format)
-
-#     #### direct conversion to CV2 ####
-#     np_arr = np.fromstring(ros_data.data, np.uint8)
-#     image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV >= 3.0:
-#     # print(image_np)
-#     cv2.imshow(WINDOW_ORIGINAL, image_np)
-#     cv2.waitKey(10)
-    
-# def listener():
-
-#     # In ROS, nodes are uniquely named. If two nodes with the same
-#     # name are launched, the previous one is kicked off. The
-#     # anonymous=True flag means that rospy will choose a unique
-#     # name for our 'listener' node so that multiple listeners can
-#     # run simultaneously.
-#     rospy.init_node('listener1', anonymous=True)
-
-#     rospy.Subscriber("/liveview/compressed", CompressedImage, callback, queue_size=1)
-
-#     # spin() simply keeps python from exiting until this node is stopped
-#     rospy.spin()
-#     # try:
-#     #     rospy.spin()
-#     # except KeyboardInterrupt:
-#     #     print("Shutting down ROS Image feature detector module")
-#     cv2.destroyAllWindows()
-
-# if __name__ == '__main__':
-#     listener()

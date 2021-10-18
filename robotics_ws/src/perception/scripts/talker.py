@@ -1,17 +1,20 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # license removed for brevity
 import rospy
-import scipy
 from std_msgs.msg import String
+from geometry_msgs.msg import Point32
  
 def talker():
-    pub = rospy.Publisher('chatter', String, queue_size=10)
+    pub = rospy.Publisher('chatter', Point32, queue_size=10)
     rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
-        hello_str = "hello world %s" % rospy.get_time()
-        rospy.loginfo(hello_str)
-        pub.publish(hello_str)
+        msg = Point32()
+        msg.x = 1.0
+        msg.y = 1.0
+        msg.z = 1.0
+        rospy.loginfo(msg)
+        pub.publish(msg)
         rate.sleep()
 
 if __name__ == '__main__':
