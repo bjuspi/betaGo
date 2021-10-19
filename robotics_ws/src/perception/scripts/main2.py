@@ -24,10 +24,18 @@ class image_processing:
         np_arr = np.fromstring(ros_data.data, np.uint8)
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
-        global previous_cnrs, previous_intxns
-        cropped, previous_cnrs, previous_intxns = ip.imgProcessing(
-            frame, previous_cnrs, previous_intxns)
+        global previous_cnrs, previous_intxns, previous_bks
+        new_bks = []
+        cropped, previous_cnrs, previous_intxns, new_bks = ip.imgProcessing(
+            frame, previous_cnrs, previous_intxns, previous_bks)
 
+        # Compare the previous bks and current bks
+        new_bk_idx = set(new_bks) - set(previous_bks)
+        if (len(new_bk_idx) != set()):
+            print("Index of the new black stone: ", new_bk_idx, + ".")
+            # Publish the position.
+            previous_bks = new_bk_idx
+        
         if (cropped == frame):
             cropped = cv2.resize(cropped, (400, 300),
                                  interpolation=cv2.INTER_AREA)
@@ -72,7 +80,7 @@ cv2.namedWindow(WINDOW_PERSPECTIVE_TRANSFORMED)
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
 cv2.moveWindow(WINDOW_PERSPECTIVE_TRANSFORMED, 400, 0)
 
-previous_cnrs, previous_intxns = ([],)*2
+previous_cnrs, previous_intxns, previous_bks = ([],)*3
 
 if __name__ == '__main__':
     main(sys.argv)

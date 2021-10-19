@@ -8,7 +8,7 @@ from collections import defaultdict
 from statistics import mean
 
 
-def imgProcessing(frame, previous_cnrs, previous_intxns):
+def imgProcessing(frame, previous_cnrs, previous_intxns, previous_bks):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
 
@@ -37,10 +37,9 @@ def imgProcessing(frame, previous_cnrs, previous_intxns):
         # Remove the outer border of the board, else the board's border lines will be included in the line detection step.
         cropped_side_len = min(unwarpped.shape[0], unwarpped.shape[1])
         cropped = cv2.resize(unwarpped, (cropped_side_len, cropped_side_len))
-        cropped = cropped[10:-10, 10:-10]
+        cropped = cropped[15:-15, 15:-15]
 
-        # If the relative position between camera and board changes, get intersections' coordinates.
-        if not np.array_equal(approx_cnrs, previous_cnrs):
+        if not np.array_equal(approx_cnrs, previous_cnrs): # Update corners and intersections.
             cropped_gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
             cropped_edges = getCannyEdges(cropped_gray)
             lines = cv2.HoughLines(cropped_edges, 1, np.pi / 180, 125, 100, 10)
@@ -60,18 +59,19 @@ def imgProcessing(frame, previous_cnrs, previous_intxns):
                     aug_intxns = augmentPoints(intxn_clusters)
                     if len(aug_intxns) != 100:
                         aug_intxns = previous_intxns.copy()
-                        return previous_cnrs, previous_intxns
-                    return approx_cnrs, aug_intxns, cropped
+                        return cropped, previous_cnrs, previous_intxns, previous_bks
+                    return cropped, approx_cnrs, aug_intxns, previous_bks
                 except:
                     print("Failed to find line intersections.")
-                    return cropped, previous_cnrs, previous_intxns
-        else:
-            for index, intxn in enumerate(previous_intxns):
-                stone_frame = cropped.copy()
+                    return cropped, previous_cnrs, previous_intxns, previous_bks
+        else: # Find the black-stone positons.
+            stone_frame = cropped.copy()
+            bks = []
+            for idx, intxn in enumerate(previous_intxns):
                 if hasBlackStone(stone_frame, int(intxn[1]), int(intxn[0])):
-                    return cropped, previous_cnrs, previous_intxns
-
-    return frame, previous_cnrs, previous_intxns
+                    bks.append(idx)
+            return cropped, previous_cnrs, previous_intxns, bks
+    return frame, previous_cnrs, previous_intxns, previous_bks
 
 
 def findContours(thresh):
@@ -231,7 +231,7 @@ def findAreaConstraints(frame):
 
 
 def colorCalibration(cropped, previous_intxns):
-    for index, intxn in enumerate(previous_intxns):
+    for idx, intxn in enumerate(previous_intxns):
         bk_ave_clrs, mt_ave_clrs = ([],)*2
 
         analyse_area = cropped[int(intxn[1])-5: int(intxn[1])+5,
@@ -240,7 +240,7 @@ def colorCalibration(cropped, previous_intxns):
         ave_clr = np.average(ave_clr_per_row, axis=0)
         ave_clr = sum(ave_clr) / len(ave_clr)
 
-        if (index == 0 | index == 9 | index == 90 | index == 99):
+        if (idx == 0 | idx == 9 | idx == 90 | idx == 99):
             bk_ave_clrs.append(ave_clr)
         else:
             mt_ave_clrs.append(ave_clr)
