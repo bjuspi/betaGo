@@ -145,6 +145,9 @@ def main(args):
         print("Shutting down ROS Image feature detector module")
     cv2.destroyAllWindows()
 
+def dist(point1, point2):
+    return math.sqrt((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)
+
 def listener():
 
     # In ROS, nodes are uniquely named. If two nodes with the same
@@ -180,42 +183,37 @@ def listener():
         area_correct = True
 
         if len(approx_corners) == 4 and area_correct:
-            # cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
-            # cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
+            cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
 
             approx_corners = np.concatenate(approx_corners).tolist()
             ref_corners = [[0, H], [0, 0], [W, 0], [W, H]]
             sorted_corners = []
 
-            print(approx_corners)
+            for ref_corner in ref_corners:
+                x = [dist(ref_corner, corner) for corner in approx_corners]
+                min_position = x.index(min(x))
+                sorted_corners.append(approx_corners[min_position])
 
-            # for ref_corner in ref_corners:
-            #     x = [math.dist(ref_corner, corner) for corner in approx_corners]
-            #     min_position = x.index(min(x))
-            #     sorted_corners.append(approx_corners[min_position])
+            destination_corners, h, w = gbip.getDestinationCorners(sorted_corners)
+            un_warped = gbip.unwarp(frame, np.float32(sorted_corners), destination_corners, w, h)
+            cropped = un_warped[0:h, 0:w]
+            cropped = cv2.resize(cropped, (300, 300))
+            cropped = cropped[15:-15, 15:-15]
 
-            # destination_corners, h, w = gbip.getDestinationCorners(sorted_corners)
-            # un_warped = gbip.unwarp(frame, np.float32(sorted_corners), destination_corners, w, h)
-            # cropped = un_warped[0:h, 0:w]
-            # cropped = cv2.resize(cropped, (300, 300))
-            # cropped = cropped[15:-15, 15:-15]
+            cropped_gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 
-            # cropped_gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
+            cropped_edges = gbip.cannyEdge(cropped_gray)
 
-            # cropped_edges = gbip.cannyEdge(cropped_gray)
+            lines = gbip.houghLine(cropped_edges)
 
-            # lines = gbip.houghLine(cropped_edges)
-
-            # print(sorted_corners)
         else: 
             cropped = np.zeros((H, W, 3), np.uint8)
 
         cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
-       # cv2.drawContours(canvas, approx_corners, -1, (255, 255, 0), 10)
 
         cv2.imshow(WINDOW_ORIGINAL, canvas)
         cv2.imshow(WINDOW_THRESH, thresh)
-        # cv2.imshow(WINDOW_PERSPECTIVE_TRANSFORM, cropped)
+        cv2.imshow(WINDOW_PERSPECTIVE_TRANSFORM, cropped)
 
         cv2.waitKey(2)
 
