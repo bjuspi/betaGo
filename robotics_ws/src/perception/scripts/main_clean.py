@@ -16,22 +16,45 @@ def listener():
         np_arr = np.fromstring(ros_data.data, np.uint8)
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
-        global previous_cnrs, previous_intxns, previous_bks
+        global previous_cnrs, previous_intxns, history_bk
+        global fr_cnt
         new_bks = []
         cropped, previous_cnrs, previous_intxns, new_bks = ip.imgProcessing(
-            frame, previous_cnrs, previous_intxns, previous_bks)
+            frame, previous_cnrs, previous_intxns, history_bk)
 
         # Check wether there is a new black stone, if so, publish its coordinates.
-        new_bk_idx = set(new_bks) - set(previous_bks)
-        if (len(new_bk_idx) != set()):
-            print("Index of the new black stone: ", new_bk_idx, + ".")
-            previous_bks = new_bk_idx
+        new_bk_idx = list(set(new_bks) - set(history_bk))
+        if (len(new_bk_idx) > 0):
+            if (temp_bk == []):
+                temp_bk = new_bk_idx
+                fr_cnt = 1
+            else:
+                if (temp_bk == new_bk_idx):
+                    fr_cnt += 1
+                    if (fr_cnt > 15):
+                        print("Index of the new black stone: ", new_bk_idx[0], + ".")
+                        print(new_bk_idx)
+                        
+                        temp_bk = []
+                        fr_cnt = 0
+                        history_bk.append(new_bk_idx[0])
+                else:
+                    temp_bk = new_bk_idx
+                    fr_cnt = 0
 
-            new_idx = 99 - new_bk_idx[0]
-            msg = Float32MultiArray()
-            msg.data = [new_idx//10, new_idx % 10]
-            rospy.loginfo(msg)
-            pub.publish(msg)
+
+            # print("Index of the new black stone: ", new_bk_idx, + ".")
+            # previous_bks = new_bk_idx
+
+            # new_idx = 99 - new_bk_idx[0]
+            # msg = Float32MultiArray()
+            # msg.data = [new_idx//10, new_idx % 10]
+            # rospy.loginfo(msg)
+            # pub.publish(msg)
+        else:
+            dsa
+
+            
 
         # Display images.
         if (cropped == frame):
@@ -59,7 +82,8 @@ cv2.namedWindow(WINDOW_PERSPECTIVE_TRANSFORMED)
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
 cv2.moveWindow(WINDOW_PERSPECTIVE_TRANSFORMED, 400, 0)
 
-previous_cnrs, previous_intxns, previous_bks = ([],)*3
+previous_cnrs, previous_intxns, history_bk, temp_bk = ([],)*5
+fr_cnt = 0
 
 if __name__ == '__main__':
     listener()

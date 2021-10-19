@@ -6,7 +6,7 @@ from collections import defaultdict
 from statistics import mean
 
 
-def imgProcessing(frame, previous_cnrs, previous_intxns, previous_bks):
+def imgProcessing(frame, previous_cnrs, previous_intxns, history_bk):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY_INV)
 
@@ -57,11 +57,11 @@ def imgProcessing(frame, previous_cnrs, previous_intxns, previous_bks):
                     aug_intxns = augmentPoints(intxn_clusters)
                     if len(aug_intxns) != 100:
                         aug_intxns = previous_intxns.copy()
-                        return cropped, previous_cnrs, previous_intxns, previous_bks
-                    return cropped, approx_cnrs, aug_intxns, previous_bks
+                        return cropped, previous_cnrs, previous_intxns, history_bk
+                    return cropped, approx_cnrs, aug_intxns, history_bk
                 except:
                     print("Failed to find line intersections.")
-                    return cropped, previous_cnrs, previous_intxns, previous_bks
+                    return cropped, previous_cnrs, previous_intxns, history_bk
         else: # Find the black-stone positions.
             stone_frame = cropped.copy()
             bks = []
@@ -69,7 +69,7 @@ def imgProcessing(frame, previous_cnrs, previous_intxns, previous_bks):
                 if hasBlackStone(stone_frame, int(intxn[1]), int(intxn[0])):
                     bks.append(idx)
             return cropped, previous_cnrs, previous_intxns, bks
-    return frame, previous_cnrs, previous_intxns, previous_bks
+    return frame, previous_cnrs, previous_intxns, history_bk
 
 
 def findContours(thresh):
