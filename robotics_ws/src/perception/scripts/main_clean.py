@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import numpy as np
 import cv2
 import rospy
@@ -17,7 +18,7 @@ def listener():
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
         global previous_cnrs, previous_intxns, history_bk
-        global fr_cnt
+        global fr_cnt, temp_bk
         new_bks = []
         cropped, previous_cnrs, previous_intxns, new_bks = ip.imgProcessing(
             frame, previous_cnrs, previous_intxns, history_bk)
@@ -51,13 +52,9 @@ def listener():
             # msg.data = [new_idx//10, new_idx % 10]
             # rospy.loginfo(msg)
             # pub.publish(msg)
-        else:
-            dsa
-
-            
 
         # Display images.
-        if (cropped == frame):
+        if np.array_equal(frame, cropped):
             cropped = cv2.resize(cropped, (400, 300),
                                  interpolation=cv2.INTER_AREA)
         else:
@@ -82,7 +79,7 @@ cv2.namedWindow(WINDOW_PERSPECTIVE_TRANSFORMED)
 cv2.moveWindow(WINDOW_ORIGINAL, 0, 0)
 cv2.moveWindow(WINDOW_PERSPECTIVE_TRANSFORMED, 400, 0)
 
-previous_cnrs, previous_intxns, history_bk, temp_bk = ([],)*5
+previous_cnrs, previous_intxns, history_bk, temp_bk = ([],)*4
 fr_cnt = 0
 
 if __name__ == '__main__':

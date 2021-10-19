@@ -1,3 +1,4 @@
+import math
 import cv2
 import numpy as np
 import scipy.spatial as spatial
@@ -207,7 +208,8 @@ def hasBlackStone(img, x, y):
     ave_clr = np.average(ave_clr_per_row, axis=0)
     ave_clr = sum(ave_clr) / len(ave_clr)
 
-    bk_clr_con = np.load('./perception/black_stone_color_constraint.npy')
+    # bk_clr_con = np.load('./perception/black_stone_color_constraint.npy')
+    bk_clr_con = [100]
     if ave_clr < bk_clr_con[0]:
         cv2.circle(img, (y, x), radius=5, color=(153, 255, 51), thickness=-1)
         return True

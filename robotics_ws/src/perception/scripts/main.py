@@ -54,7 +54,9 @@ def listener():
     stone_position_printed = False # For testing purpose.
     point_position_recorded = False
     previous_corners = []
-    previous_blacks = []
+    history_blacks = []
+    temp_blacks = []
+    frame_count = 0
     area_correct = False
 
     # In ROS, nodes are uniquely named. If two nodes with the same
@@ -166,16 +168,31 @@ def listener():
                     else:
                         available_points.append(index)
 
-                new_black = list(set(black_stones) - set(previous_blacks))
+                new_black = list(set(black_stones) - set(history_blacks))
                 if (len(new_black) > 0):
-                    new_index = 99 - new_black[0]
-                    print("New Black: ", new_index)
-                    msg = Float32MultiArray()
-                    msg.data = [new_index//10, new_index%10]
-                    rospy.loginfo(msg)
-                    pub.publish(msg)
-                    previous_blacks = black_stones.copy()
-                
+                    if (temp_blacks == []):
+                        temp_blacks = new_black
+                        frame_count = 1
+                    else:
+                        if (temp_blacks == new_black):
+                            frame_count += 1
+                            if (frame_count > 15):
+                                print("New black: ", new_black)
+                                
+                                temp_blacks = []
+                                frame_count = 0
+                                history_blacks.append(new_black[0])
+
+                                new_index = 99 - new_black[0]
+                                print("New Black Index: ", new_index)
+                                msg = Float32MultiArray()
+                                msg.data = [new_index//10, new_index%10]
+                                rospy.loginfo(msg)
+                                pub.publish(msg)
+                        else:
+                            temp_blacks = new_black
+                            frame_count = 0
+
                 if stone_position_printed:
                     print('Black stones:', black_stones)
                     print('White stones:', white_stones)

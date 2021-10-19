@@ -162,6 +162,7 @@ include_directories(
 catkin_install_python(PROGRAMS
   scripts/main.py
   scripts/talker.py
+  scripts/main_clean.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
