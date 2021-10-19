@@ -64,7 +64,7 @@ def imgProcessing(frame, previous_cnrs, previous_intxns, previous_bks):
                 except:
                     print("Failed to find line intersections.")
                     return cropped, previous_cnrs, previous_intxns, previous_bks
-        else: # Find the black-stone positons.
+        else: # Find the black-stone positions.
             stone_frame = cropped.copy()
             bks = []
             for idx, intxn in enumerate(previous_intxns):
