@@ -51,7 +51,7 @@ def dist(point1, point2):
     return math.sqrt((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)
 
 def listener():
-    stone_position_printed = True # For testing purpose.
+    stone_position_printed = False # For testing purpose.
     point_position_recorded = False
     previous_corners = []
     previous_blacks = []
@@ -62,6 +62,7 @@ def listener():
     # anonymous=True flag means that rospy will choose a unique
     # name for our 'listener' node so that multiple listeners can
     # run simultaneously.
+    pub = rospy.Publisher('chatter', Float32MultiArray, queue_size=10)
     rospy.init_node('listener', anonymous=True)
 
     while not rospy.is_shutdown():
@@ -165,9 +166,14 @@ def listener():
                     else:
                         available_points.append(index)
 
-                new_black = set(black_stones) - set(previous_blacks)
+                new_black = list(set(black_stones) - set(previous_blacks))
                 if (len(new_black) > 0):
-                    print("New black: ", new_black)
+                    new_index = 99 - new_black[0]
+                    print("New Black: ", new_index)
+                    msg = Float32MultiArray()
+                    msg.data = [new_index//10, new_index%10]
+                    rospy.loginfo(msg)
+                    pub.publish(msg)
                     previous_blacks = black_stones.copy()
                 
                 if stone_position_printed:
@@ -180,6 +186,7 @@ def listener():
             cropped = np.zeros((H, W, 3), np.uint8)
             cropped_edges = np.zeros((H, W, 3), np.uint8)
             ver_hor_frame = np.zeros((H, W, 3), np.uint8)
+            board_frame = np.zeros((H, W, 3), np.uint8)
 
         cv2.drawContours(canvas, cnt, -1, (0, 255, 0), 3)
 
