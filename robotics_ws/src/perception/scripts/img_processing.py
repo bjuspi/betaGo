@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-import math
-from numpy.ma.core import empty
 import scipy.spatial as spatial
 import scipy.cluster as cluster
 from collections import defaultdict
@@ -27,7 +25,7 @@ def imgProcessing(frame, previous_cnrs, previous_intxns, previous_bks):
         ref_cnrs = [[0, H], [0, 0], [W, 0], [W, H]]
         sorted_cnrs = []
         for ref_cnr in ref_cnrs:
-            x = [math.dist(ref_cnr, cnr) for cnr in approx_cnrs]
+            x = [dist(ref_cnr, cnr) for cnr in approx_cnrs]
             min_posn = x.index(min(x))
             sorted_cnrs.append(approx_cnrs[min_posn])
         board_cnrs, h, w = getBoardCorners(sorted_cnrs)
@@ -95,6 +93,10 @@ def applyAreaConstraints(thresh):
         if 10000 < area < 30000:
             return True
     return False
+
+
+def dist(pt_1, pt_2):
+    return math.sqrt((pt_1[0] - pt_2[0])**2 + (pt_1[1] - pt_2[1])**2)
 
 
 def getBoardCorners(cnrs):

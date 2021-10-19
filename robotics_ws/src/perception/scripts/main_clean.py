@@ -1,26 +1,18 @@
-import sys
 import numpy as np
 import cv2
-from perception.main import WINDOW_ORIGINAL, WINDOW_PERSPECTIVE_TRANSFORM
 import rospy
 from sensor_msgs.msg import CompressedImage
+from std_msgs.msg import Float32MultiArray
 import img_processing as ip
 
 
-class image_processing:
-    def __init__(self):
-        # ROS publisher:
-        # self.image_pub = rospy.Publisher("/output/image_raw/compressed", CompressedImage)
-        # self.bridge = CvBridge()
+def listener():
+    pub = rospy.Publisher('chatter', Float32MultiArray, queue_size=10)
+    rospy.init_node('listener', anonymous=True)
 
-        # ROS subscriber:
-        self.subscriber = rospy.Subscriber(
-            "/liveview/compressed", CompressedImage, self.callback,  queue_size=1)
-        print("Subscribed to /liveview/compressed.")
-
-    def callback(self, ros_data):
-        print("Received image of type: '%s'." % ros_data.format)
-
+    while not rospy.is_shutdown():
+        ros_data = rospy.wait_for_message(
+            "/liveview/compressed", CompressedImage)
         np_arr = np.fromstring(ros_data.data, np.uint8)
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
@@ -29,13 +21,19 @@ class image_processing:
         cropped, previous_cnrs, previous_intxns, new_bks = ip.imgProcessing(
             frame, previous_cnrs, previous_intxns, previous_bks)
 
-        # Compare the previous bks and current bks
+        # Check wether there is a new black stone, if so, publish its coordinates.
         new_bk_idx = set(new_bks) - set(previous_bks)
         if (len(new_bk_idx) != set()):
             print("Index of the new black stone: ", new_bk_idx, + ".")
-            # Publish the position.
             previous_bks = new_bk_idx
-        
+
+            new_idx = 99 - new_bk_idx[0]
+            msg = Float32MultiArray()
+            msg.data = [new_idx//10, new_idx % 10]
+            rospy.loginfo(msg)
+            pub.publish(msg)
+
+        # Display images.
         if (cropped == frame):
             cropped = cv2.resize(cropped, (400, 300),
                                  interpolation=cv2.INTER_AREA)
@@ -43,34 +41,15 @@ class image_processing:
             cropped = cv2.resize(cropped, (300, 400),
                                  interpolation=cv2.INTER_AREA)
         frame = cv2.resize(frame, (400, 300), interpolation=cv2.INTER_AREA)
-
         cv2.imshow('Frame', frame)
         cv2.imshow('Perspective Transformed', cropped)
 
+        # For calibration purpose.
         key = cv2.waitKey(3)
         if (key == 'a'):
             ip.findAreaConstraints(frame)
         elif (key == 'c'):
             ip.colorCalibration(cropped, previous_intxns)
-
-        # Create CompressedIamge
-        # msg = CompressedImage()
-        # msg.header.stamp = rospy.Time.now()
-        # msg.format = "jpeg"
-        # msg.data = np.array(cv2.imencode('.jpg', image_np)[1]).tostring()
-        # # Publish new image
-        # self.image_pub.publish(msg)
-        # self.subscriber.unregister()
-
-
-def main(argv):
-    img_processing = image_processing()
-    rospy.init_node('image_processing', anonymous=True)
-    try:
-        rospy.spin()
-    except KeyboardInterrupt:
-        print("Shutting down ROS Image feature detector module.")
-    cv2.destroyAllWindows()
 
 
 WINDOW_ORIGINAL = 'Original'
@@ -83,4 +62,4 @@ cv2.moveWindow(WINDOW_PERSPECTIVE_TRANSFORMED, 400, 0)
 previous_cnrs, previous_intxns, previous_bks = ([],)*3
 
 if __name__ == '__main__':
-    main(sys.argv)
+    listener()
